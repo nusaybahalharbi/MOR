@@ -1,236 +1,109 @@
-import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import {
-  ArrowLeft,
-  ArrowRight,
-  ArrowUpLeft,
-  BadgeCheck,
-  Bell,
-  Car,
-  Check,
-  ChevronDown,
-  CircleHelp,
-  Clock3,
-  Coffee,
-  Flower2,
-  Heart,
-  House,
-  Instagram,
-  LayoutGrid,
-  Linkedin,
-  MapPin,
-  Menu,
-  Minus,
-  PackageCheck,
-  Pill,
-  Plus,
-  Search,
-  ShoppingBag,
-  Smartphone,
-  Sparkles,
-  Store,
-  Utensils,
-  X,
-  Zap,
+  ArrowLeft, ArrowRight, BadgeCheck, Car, Check, ChevronDown, CircleHelp,
+  Clock3, Coffee, Flower2, Menu, PackageCheck, Pill, Search, ShoppingBag,
+  Sparkles, Store, WashingMachine, X
 } from 'lucide-react';
-import type { ContactSubmission, MerchantLead } from '@/lib/forms';
 
 type Language = 'ar' | 'en';
+const CONTACT_EMAIL = import.meta.env.VITE_CONTACT_EMAIL || 'hello@morapp.tech';
+const MERCHANT_EMAIL = import.meta.env.VITE_MERCHANT_EMAIL || 'merchants@morapp.tech';
 
-const contactEmail = import.meta.env.VITE_CONTACT_EMAIL || 'hello@[DOMAIN]';
-
-const content = {
+const t = {
   ar: {
-    nav: ['كيف يعمل', 'للمحلات', 'عن مر', 'الأسئلة الشائعة'],
-    heroEyebrow: 'قريبًا في المدينة المنورة',
-    heroTitle: 'طلبك جاهز قبل توصل.',
-    heroCopy: 'اطلب من محلاتك المفضلة، مر عليهم، وخذ طلبك من سيارتك.',
-    discover: 'اكتشف مر',
-    merchantCta: 'سجّل محلك',
-    howTitle: 'مرها بثلاث خطوات.',
-    howCopy: 'تجربة استلام أذكى، أسرع، ومن غير ما تنزل من سيارتك.',
-    categoriesTitle: 'كل اللي تحبه، بطريقك.',
-    categoriesCopy: 'مر مو بس للقهوة. اكتشف محلاتك القريبة واستلم طلبك بالطريقة الأسهل.',
-    merchantTitle: 'محلك أقرب لعملائك مع مر.',
-    merchantCopy: 'استقبل الطلب قبل وصول العميل، جهزه بوقته، وسلمه عند السيارة.',
-    benefitsTitle: 'ليش مر؟',
-    launchTitle: 'البداية من المدينة.',
-    launchCopy: 'مر يبدأ من المدينة المنورة، وبعدها نكبر معكم.',
-    faqTitle: 'الأسئلة الشائعة',
-    waitTitle: 'كن من أول مستخدمين مر.',
-    waitCopy: 'سجّل اهتمامك وخلك أول من يعرف وقت الإطلاق.',
-    brandMoment: 'مر علينا، وخذ طلبك.',
-    finalTitle: 'جاهز تمر؟',
+    nav: ['الرئيسية', 'كيف يعمل', 'للمتاجر', 'عن مر', 'الأسئلة الشائعة'],
+    heroTag: 'تجربة استلام أذكى من متاجر حيّك', heroTitle: 'كل اللي في حيّك،\nأقرب لك مع مر',
+    heroCopy: 'اطلب من متاجرك القريبة، وخذ طلبك من السيارة. بدون انتظار طويل، وبدون ما تغيّر طريقك.',
+    discover: 'اكتشف مر', merchants: 'سجّل متجرك', howTitle: 'من الطلب للسيارة، بخطوات واضحة',
+    howCopy: 'اختر اللي تحتاجه، ومر على المتجر وقت ما يكون طلبك جاهز.',
+    localTitle: 'حيّك فيه كل اللي تحتاجه', localCopy: 'مر يجمع تجربة الاستلام من المقاهي والمخابز والورد والصيدليات والمغاسل والمتاجر المتخصصة — مو بس الأكل.',
+    merchantTitle: 'خل متجرك أقرب لعملائك', merchantCopy: 'استقبل طلبات الاستلام، حدّث توفر منتجاتك، واعرف متى العميل بالطريق ومتى وصل.',
+    faqTitle: 'أسئلة واضحة، وإجابات مختصرة', finalTitle: 'طلبك بطريقك. مو العكس.',
   },
   en: {
-    nav: ['How it works', 'For merchants', 'About MOR', 'FAQ'],
-    heroEyebrow: 'Coming soon to Madinah',
-    heroTitle: 'Your order is ready before you arrive.',
-    heroCopy: 'Order from your favorite local spots, drive over, and pick it up from your car.',
-    discover: 'Discover MOR',
-    merchantCta: 'Register your store',
-    howTitle: 'Pass by in three steps.',
-    howCopy: 'A smarter, faster pickup experience without leaving your car.',
-    categoriesTitle: 'Everything you love, on your way.',
-    categoriesCopy: 'MOR is more than coffee. Discover nearby businesses and pick up your order with ease.',
-    merchantTitle: 'Bring your store closer to your customers.',
-    merchantCopy: 'Receive orders ahead of arrival, prepare them on time, and hand them over at the car.',
-    benefitsTitle: 'Why MOR?',
-    launchTitle: 'Starting in Madinah.',
-    launchCopy: 'MOR starts in Madinah, then grows with you.',
-    faqTitle: 'Frequently asked questions',
-    waitTitle: 'Be one of MOR’s first users.',
-    waitCopy: 'Join the list and be the first to know when we launch.',
-    brandMoment: 'Pass by. Get your order.',
-    finalTitle: 'Ready to pass by?',
-  },
+    nav: ['Home', 'How it works', 'For merchants', 'About MOR', 'FAQ'],
+    heroTag: 'Smarter pickup from neighborhood stores', heroTitle: 'Everything nearby,\ncloser with MOR',
+    heroCopy: 'Order from local stores and pick up from your car. Less waiting, without changing your route.',
+    discover: 'Discover MOR', merchants: 'Register your store', howTitle: 'From order to car, in clear steps',
+    howCopy: 'Choose what you need, then pass by when your order is ready.',
+    localTitle: 'Your neighborhood has what you need', localCopy: 'MOR brings curbside pickup to cafés, bakeries, florists, pharmacies, laundries, and specialty stores — not only food.',
+    merchantTitle: 'Bring your store closer to customers', merchantCopy: 'Receive pickup orders, update availability, and know when a customer is on the way or has arrived.',
+    faqTitle: 'Clear questions, concise answers', finalTitle: 'Your order, on your way.',
+  }
 } as const;
 
 const steps = [
-  { number: '01', ar: 'اطلب', en: 'Order', copyAr: 'اختر المحل واطلب اللي تبيه قبل توصل.', copyEn: 'Choose a store and order before you arrive.', icon: Search },
-  { number: '02', ar: 'مر علينا', en: 'Pass by', copyAr: 'إذا صار طلبك جاهز، تحرك للمحل واضغط «أنا بالطريق».', copyEn: 'When your order is ready, head over and tap “I’m on my way”.', icon: Car },
-  { number: '03', ar: 'خذ طلبك', en: 'Pick it up', copyAr: 'إذا وصلت، اضغط «وصلت» وطلبك يجيك للسيارة.', copyEn: 'Tap “I’ve arrived” and your order comes to your car.', icon: PackageCheck },
-];
+  ['اختر متجرك', 'Choose a store', 'تصفح متاجر حيّك واختر اللي تحتاجه.', 'Browse nearby stores and choose what you need.', Store],
+  ['اطلب', 'Order', 'أرسل طلبك وخله يتجهز قبل وصولك.', 'Place your order so it is prepared before you arrive.', ShoppingBag],
+  ['أنا بالطريق', "I'm on my way", 'علّم المتجر أنك تحركت للموقع.', 'Let the store know you are heading over.', Car],
+  ['وصلت', "I've arrived", 'المتجر يجيب الطلب لسيارتك.', 'The store brings the order to your car.', PackageCheck],
+] as const;
 
 const categories = [
-  { ar: 'قهوة', en: 'Coffee', icon: Coffee },
-  { ar: 'مطاعم', en: 'Restaurants', icon: Utensils },
-  { ar: 'مخابز', en: 'Bakeries', icon: ShoppingBag },
-  { ar: 'ورد', en: 'Flowers', icon: Flower2 },
-  { ar: 'صيدليات', en: 'Pharmacies', icon: Pill },
-  { ar: 'تسوق', en: 'Retail', icon: Store },
-];
+  ['مقاهي', 'Cafés', Coffee], ['مخابز', 'Bakeries', ShoppingBag], ['ورد', 'Florists', Flower2],
+  ['صيدليات', 'Pharmacies', Pill], ['مغاسل', 'Laundry', WashingMachine], ['متاجر متخصصة', 'Specialty', Store],
+] as const;
 
-const benefits = [
-  { ar: 'ما تحتاج تنزل', en: 'Stay in your car', icon: Car },
-  { ar: 'طلبك جاهز قبل توصل', en: 'Ready before you arrive', icon: Clock3 },
-  { ar: 'استلام أسرع', en: 'Faster pickup', icon: Zap },
-  { ar: 'محلاتك حولك', en: 'Local spots nearby', icon: MapPin },
-];
-
-const faqItems = [
-  { qAr: 'وش هو مر؟', qEn: 'What is MOR?', aAr: 'مر منصة استلام من السيارة. تطلب من محل قريب قبل وصولك، ولما تكون جاهز يجيبون طلبك لسيارتك.', aEn: 'MOR is a curbside pickup platform. Order from a nearby store before you arrive, then receive it at your car.' },
-  { qAr: 'هل مر تطبيق توصيل؟', qEn: 'Is MOR a delivery app?', aAr: 'لا. أنت اللي تروح للمحل، لكن ما تحتاج تنزل من السيارة. المحل يجهز طلبك ويسلمه لك عند السيارة.', aEn: 'No. You drive to the store, but you do not need to leave your car. The store brings your order to you.' },
-  { qAr: 'كيف أستلم طلبي؟', qEn: 'How do I pick up my order?', aAr: 'اطلب، انتظر إشعار الجاهزية، اضغط «أنا بالطريق»، ثم «وصلت» عند وصولك.', aEn: 'Order, wait for the ready notification, tap “I’m on my way”, then tap “I’ve arrived” when you reach the store.' },
-  { qAr: 'وش يصير لما أضغط «وصلت»؟', qEn: 'What happens when I tap “I’ve arrived”?', aAr: 'يوصل إشعار للمحل إنك وصلت، ويطلعون طلبك لسيارتك.', aEn: 'The store is notified that you have arrived and brings your order to your car.' },
-  { qAr: 'هل أقدر أضيف أكثر من سيارة؟', qEn: 'Can I add more than one car?', aAr: 'نعم، تقدر تحفظ سياراتك وتختار السيارة المناسبة لكل طلب.', aEn: 'Yes. You can save your cars and choose the right one for each order.' },
-  { qAr: 'هل مر متوفر في كل المدن؟', qEn: 'Is MOR available in every city?', aAr: 'نبدأ من المدينة المنورة، ونخطط للتوسع معكم إلى مدن أكثر.', aEn: 'We are starting in Madinah and plan to grow into more cities with you.' },
-  { qAr: 'كيف أسجل محلي في مر؟', qEn: 'How do I register my store with MOR?', aAr: 'عبّ النموذج في صفحة المحلات، وفريقنا بيتواصل معك.', aEn: 'Fill out the merchant form and our team will get in touch.' },
-];
+const faqs = [
+  ['ما هو مر؟', 'What is MOR?', 'مر تجربة طلب واستلام من السيارة تربطك بمتاجر حيّك القريبة.', 'MOR is a curbside ordering and pickup experience connecting you with nearby local stores.'],
+  ['كيف أستلم طلبي؟', 'How do I pick up my order?', 'بعد ما يجهز طلبك، اضغط «أنا بالطريق». وعند وصولك اضغط «وصلت» ليحضره المتجر للسيارة.', 'Once your order is ready, tap “I’m on my way.” At the store, tap “I’ve arrived” and the merchant brings it to your car.'],
+  ['هل مر خدمة توصيل؟', 'Is MOR a delivery service?', 'لا. أنت تمر على المتجر، ومر يجعل الاستلام أسرع وأسهل من السيارة.', 'No. You drive to the store; MOR makes curbside pickup faster and easier.'],
+  ['كيف أسجل متجري؟', 'How do I register my store?', 'عبّ نموذج الاهتمام، وسيفتح جهازك رسالة جاهزة لإرسالها إلى فريق المتاجر.', 'Complete the interest form and your device will open a prepared email to our merchant team.'],
+  ['هل يمكن لأي نوع متجر الانضمام؟', 'Can any type of store join?', 'مر مصمم لمختلف متاجر الأحياء. التسجيل يعبر عن الاهتمام، ويؤكد الفريق الملاءمة والتوفر.', 'MOR is designed for many neighborhood businesses. Registration expresses interest; our team confirms fit and availability.'],
+  ['كيف يعرف المتجر أني وصلت؟', 'How does the store know I arrived?', 'في تجربة مر، ترسل حالة «وصلت» تنبيهًا للمتجر ليبدأ تسليم الطلب.', 'In the MOR experience, the “I’ve arrived” status alerts the merchant to begin handoff.'],
+] as const;
 
 function App() {
-  const [language, setLanguage] = useState<Language>('ar');
+  const [language, setLanguage] = useState<Language>(() => localStorage.getItem('mor-language') === 'en' ? 'en' : 'ar');
+  const [path, setPath] = useState(() => window.location.pathname);
   const [menuOpen, setMenuOpen] = useState(false);
-  const direction = language === 'ar' ? 'rtl' : 'ltr';
-  const path = window.location.pathname;
-  const isHome = path === '/' || path === '';
-  const copy = content[language];
-
   useEffect(() => {
     document.documentElement.lang = language;
-    document.documentElement.dir = direction;
-    document.title = language === 'ar' ? 'مر | اطلب قبل توصل وخذ طلبك من سيارتك' : 'MOR | Order Ahead. Pick Up From Your Car.';
-  }, [direction, language]);
-
-  const navigate = (href: string) => {
-    window.history.pushState({}, '', href);
+    document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
+    localStorage.setItem('mor-language', language);
+    document.title = language === 'ar' ? 'مر | استلام طلباتك من متاجر حيّك بسهولة' : 'MOR | Curbside Pickup From Local Stores';
+    document.querySelector('meta[name="description"]')?.setAttribute('content', language === 'ar' ? 'اطلب من متاجر حيّك القريبة واستلم طلبك من السيارة بسهولة مع مر.' : 'Order from nearby local stores and pick up from your car with MOR.');
+  }, [language]);
+  useEffect(() => { const pop = () => setPath(window.location.pathname); addEventListener('popstate', pop); return () => removeEventListener('popstate', pop); }, []);
+  const go = (href: string) => {
+    const [nextPath, hash] = href.split('#');
+    if (nextPath && nextPath !== window.location.pathname) { history.pushState({}, '', href); setPath(nextPath); scrollTo({ top: 0, behavior: 'smooth' }); }
+    else if (hash) requestAnimationFrame(() => document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth' }));
     setMenuOpen(false);
-    window.dispatchEvent(new PopStateEvent('popstate'));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
-
-  if (!isHome) {
-    return <PageShell language={language} setLanguage={setLanguage} menuOpen={menuOpen} setMenuOpen={setMenuOpen} navigate={navigate}><StaticPage path={path} language={language} navigate={navigate} /></PageShell>;
-  }
-
-  return <PageShell language={language} setLanguage={setLanguage} menuOpen={menuOpen} setMenuOpen={setMenuOpen} navigate={navigate}>
-    <main>
-      <Hero language={language} navigate={navigate} />
-      <HowItWorks language={language} />
-      <ArrivalExperience language={language} />
-      <AppPreview language={language} />
-      <Categories language={language} />
-      <MerchantSection language={language} navigate={navigate} />
-      <LaunchSection language={language} />
-      <Benefits language={language} />
-      <BrandMoment language={language} />
-      <FAQ language={language} />
-      <Waitlist language={language} />
-      <FinalCTA language={language} navigate={navigate} />
-    </main>
-  </PageShell>;
+  return <Shell language={language} setLanguage={setLanguage} menuOpen={menuOpen} setMenuOpen={setMenuOpen} go={go}>
+    {path === '/' ? <Home language={language} go={go} /> : path === '/merchants' ? <MerchantPage language={language} /> : path === '/contact' ? <ContactPage language={language} /> : path === '/privacy' || path === '/terms' ? <LegalPage language={language} kind={path.slice(1) as 'privacy'|'terms'} /> : <NotFound language={language} go={go} />}
+  </Shell>;
 }
 
-function PageShell({ children, language, setLanguage, menuOpen, setMenuOpen, navigate }: { children: ReactNode; language: Language; setLanguage: (language: Language) => void; menuOpen: boolean; setMenuOpen: (open: boolean) => void; navigate: (href: string) => void }) {
-  const copy = content[language];
-  return <div className="site-shell">
-    <header className="site-header">
-      <a className="logo" href="/" onClick={(event) => { event.preventDefault(); navigate('/'); }} aria-label="MOR">
-        <span>MOR</span><b lang="ar">مر</b>
-      </a>
-      <nav className={`main-nav ${menuOpen ? 'is-open' : ''}`} aria-label={language === 'ar' ? 'التنقل الرئيسي' : 'Main navigation'}>
-        <a href="#how" onClick={(event) => { event.preventDefault(); navigate('/#how'); }}>{copy.nav[0]}</a>
-        <a href="/merchants" onClick={(event) => { event.preventDefault(); navigate('/merchants'); }}>{copy.nav[1]}</a>
-        <a href="#about" onClick={(event) => { event.preventDefault(); navigate('/#about'); }}>{copy.nav[2]}</a>
-        <a href="#faq" onClick={(event) => { event.preventDefault(); navigate('/#faq'); }}>{copy.nav[3]}</a>
-        <button className="language-toggle" onClick={() => setLanguage(language === 'ar' ? 'en' : 'ar')} aria-label="Switch language">{language === 'ar' ? 'EN' : 'عربي'}</button>
-        <a className="button button-small button-blue nav-cta" href="/merchants" onClick={(event) => { event.preventDefault(); navigate('/merchants'); }}>{language === 'ar' ? 'انضم إلى مر' : 'Join MOR'}</a>
-      </nav>
-      <div className="header-actions"><button className="language-toggle desktop-language" onClick={() => setLanguage(language === 'ar' ? 'en' : 'ar')}>{language === 'ar' ? 'EN' : 'عربي'}</button><a className="button button-small button-blue desktop-cta" href="/merchants" onClick={(event) => { event.preventDefault(); navigate('/merchants'); }}>{language === 'ar' ? 'انضم إلى مر' : 'Join MOR'}</a><button className="menu-button" aria-label={menuOpen ? 'Close menu' : 'Open menu'} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X size={22} /> : <Menu size={22} />}</button></div>
-    </header>
-    {children}
-    <Footer language={language} navigate={navigate} />
-  </div>;
+function Shell({ children, language, setLanguage, menuOpen, setMenuOpen, go }: {children:ReactNode; language:Language; setLanguage:(l:Language)=>void; menuOpen:boolean; setMenuOpen:(v:boolean)=>void; go:(h:string)=>void}) {
+  const c=t[language], ar=language==='ar';
+  const links=[['/#top',c.nav[0]],['/#how',c.nav[1]],['/merchants',c.nav[2]],['/#about',c.nav[3]],['/#faq',c.nav[4]]];
+  return <div className="site-shell"><a className="skip-link" href="#main">{ar?'تخطّ إلى المحتوى':'Skip to content'}</a><header className="header"><a className="brand" href="/" onClick={e=>{e.preventDefault();go('/')}} aria-label={ar?'مر، الرئيسية':'MOR, home'}><span>مر</span><small>MOR</small></a><nav className={menuOpen?'nav open':'nav'} aria-label={ar?'التنقل الرئيسي':'Main navigation'}>{links.map(([href,label])=><a key={href} href={href} onClick={e=>{e.preventDefault();go(href)}}>{label}</a>)}<button className="lang mobile-lang" onClick={()=>setLanguage(ar?'en':'ar')} aria-label={ar?'Switch to English':'التبديل إلى العربية'}>{ar?'EN':'AR'}</button><a className="button primary mobile-cta" href="/merchants" onClick={e=>{e.preventDefault();go('/merchants')}}>{c.merchants}</a></nav><div className="header-actions"><button className="lang" onClick={()=>setLanguage(ar?'en':'ar')} aria-label={ar?'Switch to English':'التبديل إلى العربية'}>{ar?'EN':'AR'}</button><a className="button primary header-cta" href="/merchants" onClick={e=>{e.preventDefault();go('/merchants')}}>{c.merchants}</a><button className="menu" onClick={()=>setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-label={menuOpen?(ar?'إغلاق القائمة':'Close menu'):(ar?'فتح القائمة':'Open menu')}>{menuOpen?<X/>:<Menu/>}</button></div></header>{children}<Footer language={language} go={go}/></div>
 }
 
-function Hero({ language, navigate }: { language: Language; navigate: (href: string) => void }) {
-  const copy = content[language];
-  return <section className="hero section-pad">
-    <div className="hero-copy reveal"><div className="eyebrow"><span className="eyebrow-dot" />{copy.heroEyebrow}</div><h1>{copy.heroTitle}</h1><p>{copy.heroCopy}</p><div className="hero-actions"><a className="button button-blue" href="#how" onClick={(event) => { event.preventDefault(); document.getElementById('how')?.scrollIntoView({ behavior: 'smooth' }); }}>{copy.discover}<ArrowLeft size={18} /></a><a className="button button-outline" href="/merchants" onClick={(event) => { event.preventDefault(); navigate('/merchants'); }}>{copy.merchantCta}</a></div><div className="hero-proof"><BadgeCheck size={18} /><span>{language === 'ar' ? 'تجربة استلام مصممة حول وقتك' : 'Pickup designed around your time'}</span></div></div>
-    <div className="hero-visual"><div className="route-dash route-one" /><div className="route-dash route-two" /><div className="map-pin pin-one"><MapPin size={16} /></div><div className="map-pin pin-two"><MapPin size={16} /></div><div className="phone phone-hero"><PhoneScreen language={language} /></div><div className="floating-card ready-card"><span className="status-icon"><Check size={15} /></span><span><small>{language === 'ar' ? 'حالة الطلب' : 'Order status'}</small><strong>{language === 'ar' ? 'طلبك جاهز' : 'Your order is ready'}</strong></span></div><div className="floating-card arrival-card"><Car size={18} /><span>{language === 'ar' ? 'خذ طلبك من سيارتك' : 'Pick up from your car'}</span></div></div>
-  </section>;
-}
+function Home({language,go}:{language:Language;go:(h:string)=>void}) { const c=t[language], ar=language==='ar'; return <main id="main">
+  <section className="hero" id="top"><div className="hero-copy"><div className="eyebrow"><Sparkles size={15}/>{c.heroTag}</div><h1>{c.heroTitle.split('\n').map((s,i)=><span key={s} className={i?'accent-line':''}>{s}</span>)}</h1><p>{c.heroCopy}</p><div className="actions"><a className="button primary" href="#how" onClick={e=>{e.preventDefault();go('/#how')}}>{c.discover}{ar?<ArrowLeft/>:<ArrowRight/>}</a><a className="button secondary" href="/merchants" onClick={e=>{e.preventDefault();go('/merchants')}}>{c.merchants}</a></div><div className="trust"><span><Check/> {ar?'استلام أسرع':'Faster pickup'}</span><span><Check/> {ar?'من المتجر للسيارة':'Store to car'}</span><span><Check/> {ar?'بدون انتظار طويل':'Less waiting'}</span></div></div><ExperienceMock language={language}/></section>
+  <section className="section how" id="how"><Heading eyebrow={ar?'كيف يعمل':'How it works'} title={c.howTitle} copy={c.howCopy}/><div className="step-grid">{steps.map(([a,e,ac,ec,Icon],i)=><article className="step" key={a}><div className="step-icon"><Icon/><span>0{i+1}</span></div><h3>{ar?a:e}</h3><p>{ar?ac:ec}</p></article>)}</div></section>
+  <section className="section local" id="about"><div className="local-copy"><Heading eyebrow={ar?'متاجر حيّك':'Your neighborhood'} title={c.localTitle} copy={c.localCopy}/><div className="category-list">{categories.map(([a,e,Icon])=><span key={a}><Icon/>{ar?a:e}</span>)}</div></div><div className="route-card" aria-label={ar?'تصور لمسار الاستلام':'Pickup route illustration'}><div className="route-line"/><div className="route-point store-point"><Store/><span>{ar?'اختر متجرك':'Choose store'}</span></div><div className="route-point car-point"><Car/><span>{ar?'طلبك للسيارة':'Order to car'}</span></div><div className="route-badge"><Clock3/><b>{ar?'وقت أقل في الانتظار':'Less time waiting'}</b></div></div></section>
+  <MerchantBand language={language} go={go}/><FAQ language={language}/>
+  <section className="final"><span>MOR / مر</span><h2>{c.finalTitle}</h2><p>{ar?'قريبًا — سجّل متجرك أو تواصل معنا لمعرفة المزيد.':'Coming soon — register your store or contact us to learn more.'}</p><div className="actions"><a className="button light" href="/merchants" onClick={e=>{e.preventDefault();go('/merchants')}}>{c.merchants}</a><a className="button ghost" href="/contact" onClick={e=>{e.preventDefault();go('/contact')}}>{ar?'تواصل معنا':'Contact us'}</a></div></section>
+  </main> }
 
-function PhoneScreen({ language, compact = false }: { language: Language; compact?: boolean }) {
-  const ar = language === 'ar';
-  return <div className={`phone-screen ${compact ? 'phone-screen-compact' : ''}`} dir="rtl"><div className="phone-top"><span className="tiny-logo">MOR <b>مر</b></span><Bell size={14} /></div><div className="greeting">{ar ? 'هلا بك' : 'Welcome'}<strong>{ar ? 'وين ودك تمر اليوم؟' : 'Where are you headed?'}</strong></div><div className="search-pill"><Search size={13} />{ar ? 'ابحث عن محل قريب' : 'Search nearby stores'}</div><div className="screen-label">{ar ? 'قريب منك' : 'Near you'}</div><div className="store-banner"><div className="store-image" /><div className="store-info"><strong>{ar ? 'قهوة ريما' : 'Reema Café'}</strong><small>{ar ? 'مختص بالقهوة' : 'Specialty coffee'}</small><span><span className="rating-dot" /> 4.8 · 15 - 20 د</span></div></div><div className="screen-label screen-label-row"><span>{ar ? 'الأكثر طلبًا' : 'Most ordered'}</span><ArrowLeft size={12} /></div><div className="product-row"><div className="product-art coffee-art" /><div><strong>{ar ? 'لاتيه' : 'Latte'}</strong><small>{ar ? '18 رس' : 'SAR 18'}</small></div><button><Plus size={13} /></button></div><div className="product-row"><div className="product-art pastry-art" /><div><strong>{ar ? 'كرواسون زبدة' : 'Butter croissant'}</strong><small>{ar ? '7 رس' : 'SAR 7'}</small></div><button><Plus size={13} /></button></div><div className="phone-tabbar"><House size={15} /><Search size={15} /><ShoppingBag size={15} /><Heart size={15} /><span className="tab-active"><LayoutGrid size={15} /></span></div></div>;
-}
+function ExperienceMock({language}:{language:Language}) { const ar=language==='ar'; return <div className="experience" aria-label={ar?'تصور توضيحي لتجربة تطبيق مر':'Illustrative MOR app experience'}><div className="mock-note">{ar?'تصور توضيحي للتجربة':'Experience concept'}</div><div className="phone"><div className="phone-top"><b>مر</b><span>MOR</span></div><p className="hello">{ar?'هلا، وين ودك تمر؟':'Where are you stopping by?'}</p><div className="search"><Search/>{ar?'ابحث في متاجر حيّك':'Search neighborhood stores'}</div><small>{ar?'قريب منك':'NEAR YOU'}</small><div className="store-tile"><div className="store-art"><Store/></div><div><b>{ar?'متجر قريب':'Nearby store'}</b><span>{ar?'جاهز للاستلام من السيارة':'Curbside pickup available'}</span></div><ArrowLeft/></div><div className="order-card"><div><span>{ar?'حالة الطلب':'ORDER STATUS'}</span><b>{ar?'طلبك جاهز':'Your order is ready'}</b></div><BadgeCheck/></div><button>{ar?'أنا بالطريق':'I’m on my way'}<Car/></button></div><div className="arrival-toast"><span><Check/></span><div><small>{ar?'عند الوصول':'WHEN YOU ARRIVE'}</small><b>{ar?'اضغط «وصلت»':'Tap “I’ve arrived”'}</b></div></div></div> }
 
-function HowItWorks({ language }: { language: Language }) { const copy = content[language]; return <section className="section-pad how-section" id="how"><div className="section-heading centered"><span className="section-kicker">01 / {language === 'ar' ? 'البداية' : 'The start'}</span><h2>{copy.howTitle}</h2><p>{copy.howCopy}</p></div><div className="steps-grid">{steps.map((step, index) => { const Icon = step.icon; return <div className="step-card" key={step.number}><div className="step-top"><span>{step.number}</span><Icon size={23} strokeWidth={1.7} /></div><h3>{language === 'ar' ? step.ar : step.en}</h3><p>{language === 'ar' ? step.copyAr : step.copyEn}</p>{index < 2 && <div className="step-connector"><ArrowLeft size={16} /></div>}</div>; })}</div></section>; }
+function Heading({eyebrow,title,copy}:{eyebrow:string;title:string;copy:string}) { return <div className="heading"><span>{eyebrow}</span><h2>{title}</h2><p>{copy}</p></div> }
+function MerchantBand({language,go}:{language:Language;go:(h:string)=>void}) { const c=t[language],ar=language==='ar'; const items=ar?['استقبل طلبات الاستلام','حدّث توفر المنتجات','اعرف أن العميل بالطريق','استعد عند وصوله']:['Receive pickup orders','Update product availability','Know when customers depart','Prepare when they arrive']; return <section className="merchant-band" id="merchants"><div><span className="merchant-kicker"><Store/>{ar?'مر للمتاجر':'MOR for merchants'}</span><h2>{c.merchantTitle}</h2><p>{c.merchantCopy}</p><a className="button light" href="/merchants" onClick={e=>{e.preventDefault();go('/merchants')}}>{c.merchants}{ar?<ArrowLeft/>:<ArrowRight/>}</a></div><div className="merchant-panel">{items.map((x,i)=><div key={x}><span>{String(i+1).padStart(2,'0')}</span><b>{x}</b><Check/></div>)}</div></section> }
+function FAQ({language}:{language:Language}) { const [open,setOpen]=useState(0),ar=language==='ar'; return <section className="section faq" id="faq"><Heading eyebrow="FAQ" title={t[language].faqTitle} copy={ar?'كل اللي تحتاج تعرفه قبل ما تمر.':'What you need to know before you stop by.'}/><div className="faq-list">{faqs.map(([qa,qe,aa,ae],i)=><article className={open===i?'faq-item open':'faq-item'} key={qa}><button onClick={()=>setOpen(open===i?-1:i)} aria-expanded={open===i}><span>{ar?qa:qe}</span><ChevronDown/></button><div><p>{ar?aa:ae}</p></div></article>)}</div></section> }
 
-function ArrivalExperience({ language }: { language: Language }) { const ar = language === 'ar'; return <section className="arrival-section section-pad" id="about"><div className="arrival-copy"><span className="section-kicker light-kicker">02 / {ar ? 'تجربة الوصول' : 'Arrival experience'}</span><h2>{ar ? <>وصلت؟<br /><em>خلك مكانك.</em></> : <>Arrived?<br /><em>Stay right there.</em></>}</h2><p>{ar ? 'علّم المحل إنك وصلت، وهم يجيبون طلبك لسيارتك.' : 'Let the store know you are here and they will bring your order to your car.'}</p><div className="route-trace"><div className="trace-line"><span /></div><div className="trace-step"><strong>{ar ? 'طلبك جاهز' : 'Order ready'}</strong><small>{ar ? 'جاهز للاستلام' : 'Ready for pickup'}</small></div><div className="trace-step"><strong>{ar ? 'أنا بالطريق' : 'I’m on my way'}</strong><small>{ar ? 'المحل يعرف أنك قادم' : 'The store knows you are coming'}</small></div><div className="trace-step active"><strong>{ar ? 'وصلت' : 'I’ve arrived'}</strong><small>{ar ? 'طلبك جايك للسيارة' : 'Your order is coming to your car'}</small></div></div></div><div className="arrival-visual"><div className="arrival-orbit orbit-a" /><div className="arrival-orbit orbit-b" /><div className="arrival-center"><span className="arrival-number">03</span><Car size={48} strokeWidth={1.2} /><strong>{ar ? 'عرفنا إنك وصلت' : 'We know you arrived'}</strong><button className="arrival-button"><MapPin size={18} />{ar ? 'وصلت' : 'I’ve arrived'}</button></div><div className="arrival-dot dot-a" /><div className="arrival-dot dot-b" /></div></section>; }
+function MerchantPage({language}:{language:Language}) { const ar=language==='ar'; return <main id="main" className="inner"><section className="inner-hero"><div className="eyebrow"><Store/>{ar?'للمتاجر':'For merchants'}</div><h1>{ar?'خل متجرك أقرب لعملائك':'Bring your store closer to customers'}</h1><p>{ar?'سجّل اهتمامك بالانضمام إلى مر. النموذج يفتح رسالة بريد جاهزة في جهازك — ولن نعرض رسالة نجاح وهمية.':'Register your interest in MOR. The form opens a prepared email on your device—we do not show a false success message.'}</p></section><section className="form-section"><div><Heading eyebrow={ar?'ابدأ من هنا':'Start here'} title={ar?'عرّفنا على متجرك':'Tell us about your store'} copy={ar?'هذه الخطوة لا تنشئ حسابًا. يراجع الفريق طلب اهتمامك ويتواصل معك.':'This does not create an account. Our team reviews your interest and contacts you.'}/><div className="mini-benefits"><span><Check/>{ar?'طلبات استلام منظمة':'Organized pickup orders'}</span><span><Check/>{ar?'تنبيهات الوصول':'Arrival alerts'}</span><span><Check/>{ar?'تجربة أسرع للعميل':'Faster customer experience'}</span></div></div><EmailForm language={language} type="merchant"/></section></main> }
+function ContactPage({language}:{language:Language}) { const ar=language==='ar'; return <main id="main" className="inner"><section className="inner-hero compact"><div className="eyebrow"><CircleHelp/>{ar?'تواصل معنا':'Contact us'}</div><h1>{ar?'كيف نقدر نساعدك؟':'How can we help?'}</h1><p>{ar?'للاستفسارات العامة، تواصل مع فريق مر على hello@morapp.tech أو استخدم النموذج.':'For general questions, email hello@morapp.tech or use the form.'}</p></section><section className="form-section contact-layout"><div className="contact-card"><span>MOR / مر</span><h2>{ar?'نسمع منك.':'We’re listening.'}</h2><a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a><small>morapp.tech</small></div><EmailForm language={language} type="contact"/></section></main> }
 
-function AppPreview({ language }: { language: Language }) { const ar = language === 'ar'; return <section className="section-pad preview-section"><div className="section-heading"><span className="section-kicker">03 / {ar ? 'التطبيق' : 'The app'}</span><h2>{ar ? 'كل شيء بسيط.' : 'Everything, simple.'}</h2><p>{ar ? 'من أول طلبك إلى لحظة استلامه، كل خطوة واضحة.' : 'From your first order to pickup, every step is clear.'}</p></div><div className="phone-row"><div className="phone phone-small"><PhoneScreen language={language} compact /></div><div className="phone phone-small phone-offset"><OrderPhone language={language} /></div><div className="phone phone-small phone-hidden-mobile"><TrackingPhone language={language} /></div></div></section>; }
+function EmailForm({language,type}:{language:Language;type:'merchant'|'contact'}) { const ar=language==='ar'; const [opened,setOpened]=useState(false); const submit=(e:FormEvent<HTMLFormElement>)=>{e.preventDefault(); const data=new FormData(e.currentTarget); const subject=type==='merchant'?`MOR merchant interest — ${data.get('store')}`:`MOR website inquiry — ${data.get('name')}`; const body=[...data.entries()].map(([k,v])=>`${k}: ${v}`).join('\n'); window.location.href=`mailto:${type==='merchant'?MERCHANT_EMAIL:CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`; setOpened(true)}; return <form className="form" onSubmit={submit}><div className="form-grid">{type==='merchant'&&<><Field name="store" label={ar?'اسم المتجر':'Store name'}/><Field name="business" label={ar?'نوع النشاط':'Business type'}/></>}<Field name="name" label={ar?'الاسم':'Name'}/><Field name="phone" type="tel" label={ar?'رقم الجوال':'Phone number'}/><Field name="email" type="email" label={ar?'البريد الإلكتروني':'Email'}/>{type==='merchant'&&<Field name="city" label={ar?'المدينة':'City'}/>}</div>{type==='contact'&&<label className="field full"><span>{ar?'الرسالة':'Message'}</span><textarea name="message" rows={5} required/></label>}<button className="button primary form-button" type="submit">{type==='merchant'?(ar?'جهّز رسالة التسجيل':'Prepare registration email'):(ar?'جهّز الرسالة':'Prepare email')}<ArrowLeft/></button>{opened&&<p className="form-status" role="status">{ar?'فتحنا تطبيق البريد برسالة جاهزة. اضغط «إرسال» هناك لإكمال الطلب.':'We opened your email app with a prepared message. Press Send there to complete your request.'}</p>}<small className="form-note">{ar?'لن يتم إرسال أي بيانات حتى تضغط «إرسال» في تطبيق البريد.':'Nothing is sent until you press Send in your email app.'}</small></form> }
+function Field({name,label,type='text'}:{name:string;label:string;type?:string}) { return <label className="field"><span>{label}</span><input name={name} type={type} required autoComplete={name==='email'?'email':name==='phone'?'tel':'on'}/></label> }
 
-function OrderPhone({ language }: { language: Language }) { const ar = language === 'ar'; return <div className="phone-screen order-screen" dir="rtl"><div className="screen-nav"><ArrowRight size={15} /><strong>{ar ? 'تأكيد الطلب' : 'Confirm order'}</strong><span /></div><div className="confirm-check"><Check size={28} /></div><h3>{ar ? 'تم تأكيد طلبك' : 'Order confirmed'}</h3><p>{ar ? 'طلبك عند قهوة ريما' : 'Your order at Reema Café'}</p><div className="detail-box"><Clock3 size={16} /><span><small>{ar ? 'وقت الجاهزية' : 'Ready in'}</small><strong>10 - 15 {ar ? 'دقيقة' : 'min'}</strong></span></div><div className="detail-box"><Car size={16} /><span><small>{ar ? 'سيارتك' : 'Your car'}</small><strong>{ar ? 'تويوتا كامري' : 'Toyota Camry'}</strong></span></div><button className="screen-button">{ar ? 'عرض الطلب' : 'View order'}</button></div>; }
-function TrackingPhone({ language }: { language: Language }) { const ar = language === 'ar'; return <div className="phone-screen order-screen" dir="rtl"><div className="screen-nav"><ArrowRight size={15} /><strong>{ar ? 'تتبع الطلب' : 'Track order'}</strong><span /></div><div className="track-head"><small>#1024</small><strong>{ar ? 'قهوة ريما' : 'Reema Café'}</strong></div><div className="timeline"><div className="time-line" /><div className="time-item done"><i /><span>{ar ? 'تم تأكيد الطلب' : 'Order confirmed'}</span></div><div className="time-item done"><i /><span>{ar ? 'يُجهز' : 'Preparing'}</span></div><div className="time-item current"><i /><span>{ar ? 'جاهز' : 'Ready'}</span></div><div className="time-item"><i /><span>{ar ? 'أنا بالطريق' : 'On the way'}</span></div><div className="time-item"><i /><span>{ar ? 'وصلت' : 'Arrived'}</span></div></div><button className="screen-button">{ar ? 'أنا بالطريق' : 'I’m on my way'}</button></div>; }
-
-function Categories({ language }: { language: Language }) { const copy = content[language]; return <section className="section-pad categories-section"><div className="section-heading centered"><span className="section-kicker">04 / {language === 'ar' ? 'اكتشف' : 'Discover'}</span><h2>{copy.categoriesTitle}</h2><p>{copy.categoriesCopy}</p></div><div className="category-grid">{categories.map(({ ar, en, icon: Icon }) => <div className="category-card" key={ar}><span className="category-icon"><Icon size={23} strokeWidth={1.7} /></span><strong>{language === 'ar' ? ar : en}</strong><ArrowUpLeft size={15} /></div>)}</div></section>; }
-
-function MerchantSection({ language, navigate }: { language: Language; navigate: (href: string) => void }) { const copy = content[language]; return <section className="merchant-section section-pad"><div className="merchant-intro"><span className="section-kicker">05 / {language === 'ar' ? 'للمحلات' : 'For merchants'}</span><h2>{copy.merchantTitle}</h2><p>{copy.merchantCopy}</p><div className="merchant-stats"><span><strong>+24%</strong><small>{language === 'ar' ? 'فرصة طلبات' : 'order opportunity'}</small></span><span><strong>−15'</strong><small>{language === 'ar' ? 'وقت انتظار' : 'waiting time'}</small></span></div><a className="button button-blue" href="/merchants" onClick={(event) => { event.preventDefault(); navigate('/merchants'); }}>{copy.merchantCta}<ArrowLeft size={18} /></a></div><div className="merchant-card"><div className="merchant-card-head"><span className="store-avatar"><Store size={19} /></span><span><strong>{language === 'ar' ? 'لوحة محلك' : 'Your store dashboard'}</strong><small>{language === 'ar' ? 'قهوة ريما' : 'Reema Café'}</small></span><span className="live-pill"><i /> Live</span></div><div className="merchant-order"><div className="merchant-order-top"><span>#1024</span><span className="ready-pill">{language === 'ar' ? 'جاهز' : 'Ready'}</span></div><strong>{language === 'ar' ? 'لاتيه + كرواسون زبدة' : 'Latte + Butter croissant'}</strong><div className="merchant-order-bottom"><span><Clock3 size={14} /> 10:42</span><span>{language === 'ar' ? 'استلام من السيارة' : 'Curbside pickup'}</span></div></div><div className="merchant-order faded"><div className="merchant-order-top"><span>#1023</span><span className="preparing-pill">{language === 'ar' ? 'يُجهز' : 'Preparing'}</span></div><strong>{language === 'ar' ? 'كابتشينو' : 'Cappuccino'}</strong><div className="merchant-order-bottom"><span><Clock3 size={14} /> 10:38</span><span>{language === 'ar' ? 'في التحضير' : 'Preparing now'}</span></div></div></div></section>; }
-
-function LaunchSection({ language }: { language: Language }) { const copy = content[language]; return <section className="launch-section section-pad"><div className="launch-map"><div className="map-grid" /><div className="map-road road-a" /><div className="map-road road-b" /><div className="map-road road-c" /><div className="launch-marker"><MapPin size={19} /><span /></div><div className="map-label">Madinah</div></div><div className="launch-copy"><span className="section-kicker">06 / {language === 'ar' ? 'الانطلاقة' : 'The launch'}</span><h2>{copy.launchTitle}</h2><p>{copy.launchCopy}</p><div className="launch-note"><span><Sparkles size={16} /></span>{language === 'ar' ? 'نبدأ من حيّك، ونكبر معك.' : 'Starting in your neighborhood, growing with you.'}</div></div></section>; }
-
-function Benefits({ language }: { language: Language }) { const copy = content[language]; return <section className="section-pad benefits-section"><div className="section-heading centered"><span className="section-kicker">07 / {language === 'ar' ? 'ببساطة' : 'Simply'}</span><h2>{copy.benefitsTitle}</h2></div><div className="benefits-grid">{benefits.map(({ ar, en, icon: Icon }) => <div className="benefit-card" key={ar}><Icon size={25} strokeWidth={1.6} /><strong>{language === 'ar' ? ar : en}</strong></div>)}</div></section>; }
-
-function BrandMoment({ language }: { language: Language }) { const copy = content[language]; return <section className="brand-moment"><div className="brand-route"><span /><span /><span /><span /><span /></div><span className="section-kicker">MOR / 2026</span><h2>{copy.brandMoment}</h2><p>{language === 'ar' ? 'وقت أقل في الانتظار. وقت أكثر لك.' : 'Less time waiting. More time for you.'}</p></section>; }
-
-function FAQ({ language }: { language: Language }) { const [open, setOpen] = useState<number | null>(0); return <section className="section-pad faq-section" id="faq"><div className="section-heading"><span className="section-kicker">08 / FAQ</span><h2>{content[language].faqTitle}</h2></div><div className="faq-list">{faqItems.map((item, index) => <div className={`faq-item ${open === index ? 'open' : ''}`} key={item.qAr}><button onClick={() => setOpen(open === index ? null : index)} aria-expanded={open === index}><span>{language === 'ar' ? item.qAr : item.qEn}</span>{open === index ? <Minus size={19} /> : <Plus size={19} />}</button><div className="faq-answer"><p>{language === 'ar' ? item.aAr : item.aEn}</p></div></div>)}</div></section>; }
-
-function Waitlist({ language }: { language: Language }) { const [value, setValue] = useState(''); const [sent, setSent] = useState(false); const ar = language === 'ar'; const submit = (event: FormEvent) => { event.preventDefault(); if (value.trim()) setSent(true); }; return <section className="waitlist-section section-pad"><div><span className="section-kicker light-kicker">09 / {ar ? 'قبل الانطلاقة' : 'Before launch'}</span><h2>{content[language].waitTitle}</h2><p>{content[language].waitCopy}</p></div>{sent ? <div className="success-message"><Check size={18} />{ar ? 'تم تسجيل اهتمامك. شكرًا لك.' : 'You’re on the list. Thank you.'}</div> : <form className="waitlist-form" onSubmit={submit}><label className="sr-only" htmlFor="waitlist">{ar ? 'رقم الجوال أو البريد الإلكتروني' : 'Phone or email'}</label><input id="waitlist" value={value} onChange={(event) => setValue(event.target.value)} placeholder={ar ? 'رقم الجوال أو البريد الإلكتروني' : 'Phone or email'} required /><button className="button button-white" type="submit">{ar ? 'سجّلني' : 'Join the list'}<ArrowLeft size={17} /></button></form>}</section>; }
-
-function FinalCTA({ language, navigate }: { language: Language; navigate: (href: string) => void }) { const copy = content[language]; return <section className="final-cta section-pad"><div className="section-kicker">MOR / {language === 'ar' ? 'قريبًا' : 'Coming soon'}</div><h2>{copy.finalTitle}</h2><p>{language === 'ar' ? 'قريبًا في المدينة المنورة.' : 'Coming soon to Madinah.'}</p><div className="final-actions"><a className="button button-blue" href="#waitlist" onClick={(event) => { event.preventDefault(); document.getElementById('waitlist')?.focus(); }}>{copy.discover}</a><a className="button button-outline" href="/merchants" onClick={(event) => { event.preventDefault(); navigate('/merchants'); }}>{copy.merchantCta}</a></div></section>; }
-
-function StaticPage({ path, language, navigate }: { path: string; language: Language; navigate: (href: string) => void }) { if (path === '/merchants') return <MerchantPage language={language} />; if (path === '/contact') return <ContactPage language={language} />; if (path === '/privacy') return <LegalPage language={language} type="privacy" />; if (path === '/terms') return <LegalPage language={language} type="terms" />; return <div className="not-found section-pad"><CircleHelp size={42} /><h1>{language === 'ar' ? 'الصفحة غير موجودة' : 'Page not found'}</h1><a className="button button-blue" href="/" onClick={(event) => { event.preventDefault(); navigate('/'); }}>{language === 'ar' ? 'العودة للرئيسية' : 'Back home'}</a></div>; }
-
-function MerchantPage({ language }: { language: Language }) { const ar = language === 'ar'; return <main className="inner-page"><section className="inner-hero section-pad"><span className="eyebrow"><Store size={15} />{ar ? 'بوابة المحلات' : 'For merchants'}</span><h1>{ar ? 'خلّ استلام الطلب أسهل.' : 'Make pickup effortless.'}</h1><p>{ar ? 'مر يساعدك تستقبل الطلب قبل وصول العميل، وتقدم تجربة أسرع وأرتب عند السيارة.' : 'MOR helps you receive orders before customers arrive and deliver a faster, smoother curbside experience.'}</p></section><section className="merchant-flow section-pad"><div className="section-heading"><span className="section-kicker">01 / {ar ? 'كيف يعمل' : 'How it works'}</span><h2>{ar ? 'من الطلب إلى السيارة، كل شيء واضح.' : 'From order to car, every step is clear.'}</h2></div><div className="flow-grid">{[ar ? 'العميل يطلب' : 'Customer orders', ar ? 'تقبل الطلب' : 'You accept', ar ? 'تجهز الطلب' : 'You prepare', ar ? 'العميل يقول أنا بالطريق' : 'Customer is on the way', ar ? 'العميل يقول وصلت' : 'Customer has arrived', ar ? 'تسلّم الطلب عند السيارة' : 'You hand it over'].map((text, index) => <div className="flow-item" key={text}><span>{String(index + 1).padStart(2, '0')}</span><strong>{text}</strong></div>)}</div></section><section className="merchant-form-section section-pad"><LeadForm language={language} /></section></main>; }
-
-function LeadForm({ language }: { language: Language }) { const ar = language === 'ar'; const [sent, setSent] = useState(false); const submit = (event: FormEvent<HTMLFormElement>) => { event.preventDefault(); const data = Object.fromEntries(new FormData(event.currentTarget)) as unknown as MerchantLead; void data; setSent(true); }; return <div className="form-layout"><div className="section-heading"><span className="section-kicker">02 / {ar ? 'انضم إلى مر' : 'Join MOR'}</span><h2>{ar ? 'خلّنا نتعرف على محلك.' : 'Tell us about your store.'}</h2><p>{ar ? 'سجل اهتمامك، وفريق مر بيتواصل معك قريبًا.' : 'Register your interest and the MOR team will be in touch.'}</p></div>{sent ? <div className="form-success"><BadgeCheck size={26} /><h3>{ar ? 'وصلنا طلبك.' : 'We received your request.'}</h3><p>{ar ? 'شكرًا لاهتمامك. سنتواصل معك قريبًا.' : 'Thanks for your interest. We will be in touch soon.'}</p></div> : <form className="lead-form" onSubmit={submit}><Field label={ar ? 'اسم المحل' : 'Store name'} name="storeName" required /><Field label={ar ? 'نوع النشاط' : 'Business type'} name="businessType" required /><Field label={ar ? 'المدينة' : 'City'} name="city" required defaultValue={ar ? 'المدينة المنورة' : 'Madinah'} /><Field label={ar ? 'اسم المسؤول' : 'Contact name'} name="contactName" required /><Field label={ar ? 'رقم الجوال' : 'Phone number'} name="phone" type="tel" required /><Field label={ar ? 'البريد الإلكتروني' : 'Email'} name="email" type="email" required /><button className="button button-blue form-submit" type="submit">{ar ? 'أرسل طلب الانضمام' : 'Send registration request'}<ArrowLeft size={18} /></button></form>}</div>; }
-function Field({ label, name, type = 'text', required = false, defaultValue }: { label: string; name: string; type?: string; required?: boolean; defaultValue?: string }) { return <label className="field"><span>{label}</span><input name={name} type={type} defaultValue={defaultValue} required={required} /></label>; }
-
-function ContactPage({ language }: { language: Language }) { const ar = language === 'ar'; const [sent, setSent] = useState(false); const submit = (event: FormEvent<HTMLFormElement>) => { event.preventDefault(); const data = Object.fromEntries(new FormData(event.currentTarget)) as unknown as ContactSubmission; void data; setSent(true); }; return <main className="inner-page"><section className="inner-hero section-pad compact-inner"><span className="eyebrow"><CircleHelp size={15} />{ar ? 'تواصل معنا' : 'Contact MOR'}</span><h1>{ar ? 'وش تبي تعرف عن مر؟' : 'How can we help?'}</h1><p>{ar ? 'للاستفسارات العامة أو الدعم أو الشراكات، اترك رسالتك وسنعود لك.' : 'For general questions, support, or partnerships, send us a note and we will get back to you.'}</p></section><section className="contact-section section-pad"><div className="contact-note"><span className="contact-icon"><Smartphone size={22} /></span><h2>{ar ? 'نحن قريبين.' : 'We are close by.'}</h2><p>{ar ? 'مر يبدأ من المدينة. تواصل معنا عن أي شيء يخص التجربة.' : 'MOR starts in Madinah. Reach out about anything related to the experience.'}</p><a href={`mailto:${contactEmail}`}>{contactEmail}</a></div>{sent ? <div className="form-success"><BadgeCheck size={26} /><h3>{ar ? 'تم إرسال رسالتك.' : 'Your message was sent.'}</h3><p>{ar ? 'شكرًا لتواصلك معنا.' : 'Thanks for reaching out.'}</p></div> : <form className="lead-form contact-form" onSubmit={submit}><Field label={ar ? 'الاسم' : 'Name'} name="name" required /><Field label={ar ? 'البريد الإلكتروني' : 'Email'} name="email" type="email" required /><Field label={ar ? 'رقم الجوال' : 'Phone number'} name="phone" type="tel" /><Field label={ar ? 'نوع الاستفسار' : 'Inquiry type'} name="inquiryType" required /><label className="field"><span>{ar ? 'الرسالة' : 'Message'}</span><textarea name="message" rows={5} required /></label><button className="button button-blue form-submit" type="submit">{ar ? 'أرسل الرسالة' : 'Send message'}<ArrowLeft size={18} /></button></form>}</section></main>; }
-
-function LegalPage({ language, type }: { language: Language; type: 'privacy' | 'terms' }) { const ar = language === 'ar'; const privacy = type === 'privacy'; const title = privacy ? (ar ? 'الخصوصية' : 'Privacy') : (ar ? 'الشروط والأحكام' : 'Terms of use'); const sections = privacy ? (ar ? ['المعلومات التي نجمعها', 'المصادقة برقم الجوال', 'الموقع والسيارات', 'الطلبات والتفاعل مع المحلات', 'التحليلات والإشعارات', 'الاحتفاظ بالبيانات', 'الأمان وحقوقك', 'التواصل'] : ['Information collected', 'Phone authentication', 'Location and vehicles', 'Orders and merchant interaction', 'Analytics and notifications', 'Data retention', 'Security and your rights', 'Contact']) : (ar ? ['استخدام الموقع', 'حسابات المستخدمين', 'الطلبات والاستلام', 'المحلات والشركاء', 'المحتوى والتواصل', 'تعديل الشروط', 'التواصل'] : ['Use of this website', 'User accounts', 'Orders and pickup', 'Merchants and partners', 'Content and communication', 'Changes to these terms', 'Contact']); return <main className="inner-page legal-page"><section className="inner-hero section-pad compact-inner"><span className="eyebrow"><BadgeCheck size={15} />{ar ? 'مستند للمراجعة' : 'Document for review'}</span><h1>{title}</h1><p>{ar ? 'هذه مسودة أولية معدة للمراجعة القانونية قبل الإطلاق.' : 'This is a preliminary draft prepared for legal review before launch.'}</p></section><article className="legal-content section-pad"><div className="review-note">{ar ? 'ملاحظة: هذا النص إرشادي ويحتاج إلى مراجعة قانونية نهائية قبل استخدامه رسميًا.' : 'Note: This text is a guide and requires final legal review before official use.'}</div>{sections.map((heading) => <section key={heading}><h2>{heading}</h2><p>{ar ? `يقدم هذا القسم معلومات واضحة عن ${heading.toLowerCase()} وكيف يتعامل مر معها بما يتناسب مع تجربة الاستلام من السيارة. سيتم استكمال التفاصيل النهائية بعد المراجعة القانونية.` : `This section explains ${heading.toLowerCase()} and how MOR approaches it for a curbside pickup experience. Final details will be completed after legal review.`}</p></section>)}</article></main>; }
-
-function Footer({ language, navigate }: { language: Language; navigate: (href: string) => void }) { const ar = language === 'ar'; const links = [{ label: ar ? 'عن مر' : 'About MOR', href: '/#about' }, { label: ar ? 'كيف يعمل' : 'How it works', href: '/#how' }, { label: ar ? 'للمحلات' : 'For merchants', href: '/merchants' }, { label: ar ? 'الأسئلة الشائعة' : 'FAQ', href: '/#faq' }, { label: ar ? 'الخصوصية' : 'Privacy', href: '/privacy' }, { label: ar ? 'الشروط' : 'Terms', href: '/terms' }, { label: ar ? 'تواصل معنا' : 'Contact', href: '/contact' }]; return <footer className="site-footer"><div className="footer-top"><div className="footer-brand"><a className="logo" href="/" onClick={(event) => { event.preventDefault(); navigate('/'); }}><span>MOR</span><b>مر</b></a><p>{ar ? 'مر علينا، وخذ طلبك.' : 'Pass by. Get your order.'}</p></div><div className="footer-links">{links.map((link) => <a key={link.href} href={link.href} onClick={(event) => { event.preventDefault(); navigate(link.href); }}>{link.label}</a>)}</div><div className="footer-contact"><span>{ar ? 'تواصل' : 'Contact'}</span><a href={`mailto:${contactEmail}`}>{contactEmail}</a><div className="socials"><a href="#instagram" aria-label="Instagram"><Instagram size={17} /></a><a href="#x" aria-label="X">𝕏</a><a href="#linkedin" aria-label="LinkedIn"><Linkedin size={17} /></a></div></div></div><div className="footer-bottom"><span>© 2026 MOR. All rights reserved.</span><span>{ar ? 'صُنع للوقت اللي يهمك.' : 'Made for the time that matters.'}</span></div></footer>; }
+function LegalPage({language,kind}:{language:Language;kind:'privacy'|'terms'}) { const ar=language==='ar',privacy=kind==='privacy'; const heads=privacy?(ar?['المعلومات التي تقدمها','استخدام المعلومات','مشاركة البيانات','حماية البيانات','حقوقك','التواصل']:['Information you provide','How information is used','Data sharing','Data protection','Your rights','Contact']):(ar?['استخدام الموقع','توفر الخدمة','محتوى الموقع','حدود المسؤولية','التغييرات','التواصل']:['Website use','Service availability','Website content','Liability limits','Changes','Contact']); return <main id="main" className="inner legal"><section className="inner-hero compact"><div className="eyebrow"><BadgeCheck/>{ar?'يتطلب مراجعة قانونية':'Requires legal review'}</div><h1>{privacy?(ar?'سياسة الخصوصية':'Privacy Policy'):(ar?'الشروط والأحكام':'Terms & Conditions')}</h1><p>{ar?'مسودة أولية واضحة للإطلاق، وتحتاج مراجعة واعتمادًا قانونيًا قبل النشر النهائي.':'A plain-language launch draft that requires legal review and approval before final publication.'}</p></section><article className="legal-body"><div className="legal-note">{ar?'تنبيه: هذا النص مؤقت وليس استشارة قانونية.':'Notice: This is temporary copy, not legal advice.'}</div>{heads.map((h,i)=><section key={h}><span>0{i+1}</span><h2>{h}</h2><p>{ar?'سيتم توضيح تفاصيل هذا القسم بدقة بعد اعتماد طريقة تشغيل الخدمة ومراجعة المختص القانوني. للتواصل بشأن هذه الوثيقة: hello@morapp.tech.':'This section will be finalized once the service model is confirmed and reviewed by legal counsel. For questions about this document: hello@morapp.tech.'}</p></section>)}</article></main> }
+function NotFound({language,go}:{language:Language;go:(h:string)=>void}) { const ar=language==='ar'; return <main id="main" className="not-found"><span>404</span><h1>{ar?'الصفحة غير موجودة':'Page not found'}</h1><a className="button primary" href="/" onClick={e=>{e.preventDefault();go('/')}}>{ar?'العودة للرئيسية':'Back home'}</a></main> }
+function Footer({language,go}:{language:Language;go:(h:string)=>void}) { const ar=language==='ar'; const links=[['/#about',ar?'عن مر':'About MOR'],['/merchants',ar?'للمتاجر':'For merchants'],['/contact',ar?'تواصل معنا':'Contact'],['/privacy',ar?'سياسة الخصوصية':'Privacy'],['/terms',ar?'الشروط والأحكام':'Terms']]; return <footer><div className="footer-main"><div><a className="brand footer-brand" href="/" onClick={e=>{e.preventDefault();go('/')}}><span>مر</span><small>MOR</small></a><p>{ar?'استلام أسهل من متاجر حيّك.':'Easier pickup from neighborhood stores.'}</p></div><nav aria-label={ar?'روابط التذييل':'Footer links'}>{links.map(([h,l])=><a key={h} href={h} onClick={e=>{e.preventDefault();go(h)}}>{l}</a>)}</nav><div className="footer-contact"><span>{ar?'تواصل معنا':'Contact us'}</span><a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a><a href="https://morapp.tech">morapp.tech</a></div></div><div className="footer-bottom"><span>© 2026 MOR</span><span>{ar?'مر':'MOR'} · Riyadh, Saudi Arabia</span></div></footer> }
 
 export default App;
