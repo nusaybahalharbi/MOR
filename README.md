@@ -17,8 +17,8 @@ npm ci && npm run build
 
 Optional environment variables:
 
-- `VITE_CONTACT_EMAIL` (defaults to `hello@morapp.tech`)
-- `VITE_MERCHANT_EMAIL` (defaults to `merchants@morapp.tech`)
+- `VITE_CONTACT_EMAIL` (defaults to `support@morapp.tech`)
+- `VITE_MERCHANT_EMAIL` (defaults to `support@morapp.tech`)
 
 The contact and merchant forms open a prepared email in the visitor's email application. Connect a form backend before launch if in-page submission is required.
 
