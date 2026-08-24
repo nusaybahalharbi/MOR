@@ -171,3 +171,24 @@ html[lang="ar"] body,html[lang="ar"] h1,html[lang="ar"] h2,html[lang="ar"] h3,ht
   .merchant-world{padding:82px 20px}.merchant-inner{gap:55px}.merchant-console{min-height:520px;border-radius:20px;transform:none}.console-body{padding:16px}.console-order{padding:17px;grid-template-columns:1fr auto}.console-order .order-no{display:none}.console-flow{margin-inline:4px}.console-pulse{right:-20px;width:58px;height:58px}
   .types-section{padding-top:72px}.faq-section{padding-top:72px}
 }
+
+/* iPhone stability: decorative depth must never move the document viewport. */
+html,body,#root,.site-shell,.world-page{max-width:100%;overflow-x:hidden;overscroll-behavior-x:none}
+body{touch-action:pan-y}
+@supports(overflow:clip){html,body,#root,.site-shell,.world-page{overflow-x:clip}}
+@media(max-width:620px){
+  .world-hero-inner{display:block!important;inline-size:100%!important;max-inline-size:100%!important;min-inline-size:0!important}
+  .world-copy,.world-copy>*{max-inline-size:100%!important;min-inline-size:0!important}
+  .world-copy{inline-size:100%!important;margin:0!important;transform:none!important}
+  .world-copy h1,.world-copy>p,.world-copy .actions,.world-proof{inline-size:100%!important}
+  .world-copy .actions{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:10px}
+  .world-copy .actions .button{inline-size:100%!important;max-inline-size:100%!important;white-space:normal;text-align:center}
+  .neighborhood-stage{inline-size:calc(100% + 40px)!important;max-inline-size:calc(100% + 40px)!important;margin:12px -20px -12px!important;overflow:hidden;transform:none!important}
+  .neighborhood-stage>img{inline-size:155%!important;max-inline-size:none!important;transform:none!important;animation:none!important}
+  .scene-status{right:18px!important;left:auto!important}.scene-chip{right:34px!important;left:auto!important}
+  .phone-scene{inline-size:100%;max-inline-size:100%;overflow:hidden;transform:none!important;margin-inline:0}
+  .phone-shell{inline-size:min(315px,calc(100vw - 42px));max-inline-size:calc(100vw - 42px)}
+  .floating-arrival{right:0}.floating-vehicle{left:0}
+  .journey-track,.merchant-console{max-inline-size:100%;overflow:hidden}
+  .journey-car,.console-pulse{animation:none!important}
+}
