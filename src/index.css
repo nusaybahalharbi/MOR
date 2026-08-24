@@ -66,6 +66,9 @@ body{background:var(--mor-navy)}
 .contact-cta p{color:var(--muted);font-size:17px;margin:0}
 .contact-form-wrap{max-width:760px;padding-top:70px}
 .contact-form-wrap .lead-form{width:100%}
+.form-honeypot{position:absolute!important;left:-10000px!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important}
+.form-submit:disabled{cursor:wait;opacity:.72;transform:none}
+.form-status.error{background:#fff0f1;color:#a82935}
 
 @media(max-width:560px){
   .site-header{background:var(--mor-navy);border-bottom:0}
