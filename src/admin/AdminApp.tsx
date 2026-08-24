@@ -92,15 +92,32 @@ export default function AdminApp() {
 }
 
 function AdminLogin({ initialError }: { initialError?: string }) {
+  const adminPhone = import.meta.env.VITE_ADMIN_PHONE_E164 || '+966580229777';
   const [error, setError] = useState(initialError ?? ''); const [loading, setLoading] = useState(false);
-  const submit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); if (!supabase) return; setLoading(true); setError('');
-    const form = new FormData(event.currentTarget);
-    const { error: loginError } = await supabase.auth.signInWithPassword({ email: String(form.get('email')), password: String(form.get('password')) });
-    if (loginError) setError('بيانات الدخول غير صحيحة أو تعذر تسجيل الدخول.');
+  const [codeSent, setCodeSent] = useState(false); const [code, setCode] = useState(''); const [cooldown, setCooldown] = useState(0);
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const timer = window.setInterval(() => setCooldown(value => Math.max(0, value - 1)), 1000);
+    return () => window.clearInterval(timer);
+  }, [cooldown]);
+
+  const sendCode = async () => {
+    if (!supabase || cooldown > 0) return;
+    setLoading(true); setError('');
+    const { error: otpError } = await supabase.auth.signInWithOtp({ phone: adminPhone, options: { shouldCreateUser: false } });
+    if (otpError) setError('تعذر إرسال رمز التحقق. تأكد من إعداد رسائل الجوال في Supabase ثم حاول مجددًا.');
+    else { setCodeSent(true); setCooldown(60); }
     setLoading(false);
   };
-  return <main className="admin-login"><section className="login-brand"><img src={morMark} alt="شعار مر"/><span>MOR CONTROL</span><h1>إدارة مر، بوضوح.</h1><p>بوابة خاصة لفريق مر لمراجعة التجار ومتابعة الدعم والعمليات.</p></section><section className="login-panel"><div><span className="admin-kicker"><ShieldCheck/> دخول محمي</span><h2>تسجيل دخول الإدارة</h2><p>استخدم حساب العمل المصرح له.</p><form onSubmit={submit}><label><span>البريد الإلكتروني</span><input name="email" type="email" autoComplete="username" defaultValue="support@morapp.tech" required/></label><label><span>كلمة المرور</span><input name="password" type="password" autoComplete="current-password" required/></label><button className="admin-primary" disabled={loading}>{loading ? 'جاري الدخول…' : 'تسجيل الدخول'}</button>{error && <p className="admin-error" role="alert">{error}</p>}</form></div></section></main>;
+
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault(); if (!supabase) return; setLoading(true); setError('');
+    if (!/^\d{6}$/.test(code)) { setError('أدخل رمز التحقق المكوّن من 6 أرقام.'); setLoading(false); return; }
+    const { error: loginError } = await supabase.auth.verifyOtp({ phone: adminPhone, token: code, type: 'sms' });
+    if (loginError) setError('رمز التحقق غير صحيح أو انتهت صلاحيته.');
+    setLoading(false);
+  };
+  return <main className="admin-login"><section className="login-brand"><img src={morMark} alt="شعار مر"/><span>MOR CONTROL</span><h1>إدارة مر، بوضوح.</h1><p>بوابة خاصة لفريق مر لمراجعة التجار ومتابعة الدعم والعمليات.</p></section><section className="login-panel"><div><span className="admin-kicker"><ShieldCheck/> دخول محمي</span><h2>تسجيل دخول الإدارة</h2><p>الدخول متاح لرقم مدير مر المصرح له فقط.</p><div className="admin-phone" dir="ltr">{adminPhone}</div>{!codeSent ? <button type="button" className="admin-primary admin-login-action" disabled={loading} onClick={sendCode}>{loading ? 'جاري إرسال الرمز…' : 'إرسال رمز التحقق'}</button> : <form onSubmit={submit}><label><span>رمز التحقق</span><input name="otp" type="text" inputMode="numeric" autoComplete="one-time-code" maxLength={6} dir="ltr" value={code} onChange={event => setCode(event.target.value.replace(/\D/g, '').slice(0, 6))} placeholder="••••••" autoFocus required/></label><button className="admin-primary" disabled={loading || code.length !== 6}>{loading ? 'جاري التحقق…' : 'دخول لوحة الإدارة'}</button><button type="button" className="admin-resend" disabled={loading || cooldown > 0} onClick={sendCode}>{cooldown > 0 ? `إعادة الإرسال بعد ${cooldown}ث` : 'إعادة إرسال الرمز'}</button></form>}{error && <p className="admin-error" role="alert">{error}</p>}<p className="admin-security-note">بعد التحقق من الجوال، تُفحص صلاحية الحساب عبر قاعدة البيانات قبل فتح لوحة الإدارة.</p></div></section></main>;
 }
 
 function AdminMessage({ title, body, loading }: { title: string; body: string; loading?: boolean }) {
