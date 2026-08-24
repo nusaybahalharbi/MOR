@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import {
   ArrowLeft, ArrowRight, BadgeCheck, Bell, Car, Check, ChevronDown,
-  Clock3, Coffee, Mail, MapPin, Menu, PackageCheck, Search, ShoppingBag,
-  Sparkles, Store, Utensils, X, Zap
+  Coffee, Mail, MapPin, Menu, PackageCheck, Search, ShoppingBag,
+  Store, Utensils, X, Zap
 } from 'lucide-react';
 import morMark from './assets/brand/mor-mark-transparent.png';
+import neighborhoodHero from './assets/brand/mor-neighborhood-hero.png';
 
 type Language = 'ar' | 'en';
 type Navigate = (href: string) => void;
@@ -99,16 +100,41 @@ function Shell({ children, language, setLanguage, menuOpen, setMenuOpen, scrolle
     </div></header>{children}<div className="floating-language" role="group" aria-label={ar ? 'اختيار اللغة' : 'Choose language'}><button className={ar ? 'active' : ''} onClick={() => setLanguage('ar')} aria-pressed={ar}><span aria-hidden="true">🇸🇦</span><b>عربي</b></button><button className={!ar ? 'active' : ''} onClick={() => setLanguage('en')} aria-pressed={!ar}><span aria-hidden="true">🇺🇸</span><b>English</b></button></div></div>;
 }
 
-function Home({ language, go }: { language: Language; go: Navigate }) { const c = copy[language], ar = language === 'ar'; return <main id="main">
-  <section className="hero" id="top"><div className="hero-grid"><div className="hero-copy reveal"><span className="eyebrow light"><Sparkles />{c.heroTag}</span><h1>{c.heroTitle}</h1><p>{c.heroBody}</p><div className="actions"><a className="button bright" href="#how" onClick={e => { e.preventDefault(); go('/#how'); }}>{c.discover}{ar ? <ArrowLeft /> : <ArrowRight />}</a><a className="button glass" href="/merchants" onClick={e => { e.preventDefault(); go('/merchants'); }}>{c.merchant}</a></div><div className="hero-trust"><span><Check />{ar ? 'من المتجر للسيارة' : 'Store to car'}</span><span><Clock3 />{ar ? 'بدون انتظار طويل' : 'Less waiting'}</span></div></div><HeroRoad language={language} /></div><div className="hero-grid-lines" /></section>
-  <section className="section intro reveal" id="about"><div className="intro-number">01</div><div><span className="section-label">MOR / مر</span><h2>{ar ? 'مر يربط طلبك بطريقك.' : 'MOR connects your order to your route.'}</h2></div><p>{ar ? 'مو تطبيق توصيل. أنت تمر على متجرك القريب، وهم يجهزون طلبك ويسلمونه لك عند السيارة.' : 'Not a delivery app. You pass by a nearby store, and they prepare and hand over your order at your car.'}</p></section>
-  <How language={language} />
-  <CustomerExperience language={language} />
-  <StoreTypes language={language} />
-  <MerchantExperience language={language} go={go} />
-  <FAQ language={language} />
-  <section className="contact-cta reveal"><div><span className="section-label">{ar ? 'فريق مر' : 'MOR TEAM'}</span><h2>{c.finalTitle}</h2><p>{c.finalBody}</p></div><a className="button primary" href="/contact#contact-name" onClick={e => { e.preventDefault(); go('/contact#contact-name'); }}>{ar ? 'تواصل معنا' : 'Contact us'}{ar ? <ArrowLeft/> : <ArrowRight/>}</a></section>
-  </main>; }
+function Home({ language, go }: { language: Language; go: Navigate }) {
+  const c = copy[language], ar = language === 'ar';
+  return <main id="main" className="world-page">
+    <section className="world-hero" id="top">
+      <div className="world-glow"/><div className="world-grid"/>
+      <div className="world-hero-inner">
+        <div className="world-copy reveal"><span className="world-kicker"><span className="pulse-dot"/>{c.heroTag}</span><h1>{c.heroTitle}</h1><p>{c.heroBody}</p><div className="actions"><a className="button bright" href="#journey" onClick={e => { e.preventDefault(); go('/#journey'); }}>{c.discover}{ar ? <ArrowLeft/> : <ArrowRight/>}</a><a className="button glass" href="/merchants" onClick={e => { e.preventDefault(); go('/merchants'); }}>{c.merchant}</a></div><div className="world-proof"><span><strong>01</strong>{ar ? 'اطلب من القريب' : 'Order nearby'}</span><i/><span><strong>02</strong>{ar ? 'استلم من السيارة' : 'Pick up curbside'}</span></div></div>
+        <div className="neighborhood-stage reveal"><img src={neighborhoodHero} alt={ar ? 'حي عصري يربط المقاهي والمطاعم بسيارة العميل عبر طريق مر' : 'A modern neighborhood connecting cafés and restaurants to the customer car through the MOR road'} /><div className="scene-status"><span className="status-orbit"><i/></span><small>{ar ? 'نقطة الاستلام' : 'PICKUP POINT'}</small><b>{ar ? 'طلبك جاهز' : 'Order ready'}</b></div><div className="scene-chip"><Car/>{ar ? 'أنت بالطريق' : 'You’re on the way'}</div></div>
+      </div><div className="hero-scroll-cue"><span>{ar ? 'تابع الرحلة' : 'Follow the journey'}</span><i/></div>
+    </section>
+
+    <JourneyStory language={language}/>
+    <ProductStory language={language}/>
+    <MerchantWorld language={language} go={go}/>
+    <StoreTypes language={language}/>
+    <FAQ language={language}/>
+    <section className="contact-cta reveal"><div><span className="section-label">{ar ? 'فريق مر' : 'MOR TEAM'}</span><h2>{c.finalTitle}</h2><p>{c.finalBody}</p></div><a className="button primary" href="/contact#contact-name" onClick={e => { e.preventDefault(); go('/contact#contact-name'); }}>{ar ? 'تواصل معنا' : 'Contact us'}{ar ? <ArrowLeft/> : <ArrowRight/>}</a></section>
+  </main>;
+}
+
+function JourneyStory({ language }: { language: Language }) {
+  const ar = language === 'ar';
+  const steps = ar ? ['اختر متجرك','اطلب','أنا بالطريق','وصلت','طلبك عند سيارتك'] : ['Choose your store','Order','I’m on my way','Arrived','Your order reaches your car'];
+  return <section className="journey-world" id="journey"><div className="journey-intro reveal"><span className="section-label">{ar ? 'رحلة واحدة، بدون انقطاع' : 'ONE CONNECTED JOURNEY'}</span><h2>{ar ? 'من حيّك إلى سيارتك، على طريق مر.' : 'From your neighborhood to your car, along the MOR road.'}</h2><p>{ar ? 'مر مو توصيل. اطلب، تحرك للفرع، وخذ طلبك بدون ما تنزل من السيارة.' : 'MOR is not delivery. Order, head to the branch, and collect without leaving your car.'}</p></div><div className="journey-track reveal"><svg viewBox="0 0 1200 420" preserveAspectRatio="none" aria-hidden="true"><path className="journey-shadow" d="M35 330 C190 65 330 65 455 230 S720 410 820 180 S1040 60 1165 125"/><path className="journey-line" d="M35 330 C190 65 330 65 455 230 S720 410 820 180 S1040 60 1165 125"/></svg><div className="journey-car" aria-hidden="true"><Car/></div>{steps.map((step,i)=><article key={step} className={`journey-step step-${i+1}`}><span>{String(i+1).padStart(2,'0')}</span><b>{step}</b>{i===3 && <i className="arrival-ring"/>}</article>)}</div></section>;
+}
+
+function ProductStory({ language }: { language: Language }) {
+  const ar=language==='ar';
+  return <section className="product-world" id="customers"><div className="product-copy reveal"><span className="section-label">{ar ? 'تجربة العميل' : 'CUSTOMER EXPERIENCE'}</span><h2>{ar ? 'كل شيء واضح. من الطلب إلى الوصول.' : 'Everything stays clear, from order to arrival.'}</h2><p>{ar ? 'واجهة هادئة تعرض القريب، حالة الطلب، سيارتك، ونقطة الاستلام في اللحظة المناسبة.' : 'A calm interface surfaces nearby stores, order status, your vehicle and pickup point exactly when needed.'}</p><div className="product-notes"><span><i>01</i>{ar?'متاجر قريبة فعلًا':'Truly nearby stores'}</span><span><i>02</i>{ar?'حالة الطلب مباشرة':'Live order status'}</span><span><i>03</i>{ar?'وصول مفهوم للمتجر':'Arrival the store understands'}</span></div></div><div className="phone-scene reveal"><div className="phone-halo"/><div className="phone-shell"><div className="phone-island"/><div className="phone-top"><Brand compact/><Bell/></div><small>{ar?'مساء الخير':'Good evening'}</small><h3>{ar?'وش ودك اليوم؟':'What would you like today?'}</h3><div className="map-surface"><span className="map-road one"/><span className="map-road two"/><span className="map-pin pin-one"><i/></span><span className="map-pin pin-two"><i/></span><div className="map-car"><Car/></div></div><div className="phone-order"><span><b>{ar?'طلبك جاهز':'Your order is ready'}</b><small>{ar?'الاستلام من السيارة':'Curbside pickup'}</small></span><button>{ar?'أنا بالطريق':"I'm on my way"}</button></div></div><div className="floating-arrival"><span className="arrival-icon"><MapPin/></span><small>{ar?'تم إشعار المتجر':'Store notified'}</small><b>{ar?'وصلت لنقطة الاستلام':'You’ve reached pickup'}</b></div><div className="floating-vehicle"><Car/><span><small>{ar?'السيارة':'VEHICLE'}</small><b>2030 · N T U</b></span></div></div></section>;
+}
+
+function MerchantWorld({ language, go }: { language: Language; go: Navigate }) {
+  const ar=language==='ar'; const items=ar?['طلب جديد','جاري التجهيز','العميل بالطريق','العميل وصل','تم التسليم']:['New order','Preparing','Customer en route','Customer arrived','Handed over'];
+  return <section className="merchant-world" id="business"><div className="merchant-aura"/><div className="merchant-inner"><div className="merchant-copy reveal"><span className="section-label">MOR BUSINESS</span><h2>{ar?'خل متجرك أقرب لعملائك':'Bring your store closer to customers'}</h2><p>{ar?'تدفق تشغيلي واحد يوضح لفريقك متى يجهّز، ومتى يتحرك العميل، ومتى وصل.':'One operational flow tells your team when to prepare, when the customer leaves, and when they arrive.'}</p><a className="button bright" href="/merchants" onClick={e=>{e.preventDefault();go('/merchants')}}>{ar?'سجّل متجرك':'Register your store'}{ar?<ArrowLeft/>:<ArrowRight/>}</a></div><div className="merchant-console reveal"><div className="console-top"><span><i/><b>{ar?'مر للأعمال':'MOR BUSINESS'}</b></span><small>{ar?'الفرع يعمل':'BRANCH LIVE'}</small></div><div className="console-body"><div className="console-order"><span className="order-no">#1048</span><div><b>{ar?'طلب استلام من السيارة':'Curbside order'}</b><small>{ar?'سيدان · 2030 N T U':'Sedan · 2030 N T U'}</small></div><strong>{ar?'وصل':'ARRIVED'}</strong></div><div className="console-flow">{items.map((item,i)=><div className={i<4?'done':''} key={item}><span>{i<4?<Check/>:String(i+1)}</span><b>{item}</b></div>)}</div></div><div className="console-pulse"><MapPin/></div></div></div></section>;
+}
 
 function HeroRoad({ language }: { language: Language }) { const ar = language === 'ar'; return <div className="hero-visual reveal"><div className="logo-orbit"><img src={morMark} alt={ar ? 'شعار مر' : 'MOR logo'} /></div><svg className="road-svg" viewBox="0 0 620 560" aria-hidden="true"><defs><linearGradient id="roadGlow" x1="0" x2="1"><stop stopColor="#18d7ff" /><stop offset="1" stopColor="#1658f0" /></linearGradient><filter id="glow"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><path className="road-base" d="M55 510 C 170 420, 155 310, 295 292 S 430 120, 585 55"/><path className="road-line" d="M55 510 C 170 420, 155 310, 295 292 S 430 120, 585 55"/><circle className="moving-light" r="7" fill="url(#roadGlow)" filter="url(#glow)"><animateMotion dur="5.5s" repeatCount="indefinite" path="M55 510 C 170 420, 155 310, 295 292 S 430 120, 585 55"/></circle></svg><div className="journey-card journey-ready"><BadgeCheck/><span><small>{ar ? 'حالة الطلب' : 'ORDER STATUS'}</small><b>{ar ? 'طلبك جاهز' : 'Order ready'}</b></span></div><div className="journey-card journey-arrived"><MapPin/><span><small>{ar ? 'عند الوصول' : 'ON ARRIVAL'}</small><b>{ar ? 'اضغط «وصلت»' : 'Tap “I’ve arrived”'}</b></span></div></div>; }
 
@@ -152,4 +178,5 @@ function Field({ name, label, type = 'text', id, autoFocus = false }: { name: st
 
 function LegalPage({ language, kind }: { language: Language; kind: 'privacy' | 'terms' }) { const ar = language === 'ar', privacy = kind === 'privacy'; const headings = privacy ? (ar ? ['المعلومات التي تقدمها', 'استخدام المعلومات', 'مشاركة البيانات', 'حماية البيانات', 'حقوقك', 'التواصل'] : ['Information you provide', 'How information is used', 'Data sharing', 'Data protection', 'Your rights', 'Contact']) : (ar ? ['استخدام الموقع', 'توفر الخدمة', 'محتوى الموقع', 'حدود المسؤولية', 'التغييرات', 'التواصل'] : ['Website use', 'Service availability', 'Website content', 'Liability limits', 'Changes', 'Contact']); return <main id="main" className="inner-page legal-page"><section className="inner-hero compact"><span className="eyebrow light"><BadgeCheck/>{ar ? 'يتطلب مراجعة قانونية' : 'Requires legal review'}</span><h1>{privacy ? (ar ? 'سياسة الخصوصية' : 'Privacy Policy') : (ar ? 'الشروط والأحكام' : 'Terms & Conditions')}</h1><p>{ar ? 'مسودة أولية تحتاج مراجعة واعتمادًا قانونيًا قبل النشر النهائي.' : 'A preliminary draft requiring legal review before final publication.'}</p></section><article className="legal-content"><div className="legal-note">{ar ? 'تنبيه: هذا النص مؤقت وليس استشارة قانونية.' : 'Notice: This is temporary copy, not legal advice.'}</div>{headings.map((heading, i) => <section key={heading}><span>{String(i + 1).padStart(2, '0')}</span><h2>{heading}</h2><p>{ar ? `سيتم استكمال تفاصيل ${heading} بعد اعتماد نموذج تشغيل الخدمة ومراجعة المختص القانوني. للتواصل: ${SUPPORT_EMAIL}.` : `Details for ${heading.toLowerCase()} will be finalized after the service model is confirmed and reviewed by legal counsel. Contact: ${SUPPORT_EMAIL}.`}</p></section>)}</article></main>; }
 function NotFound({ language, go }: { language: Language; go: Navigate }) { const ar = language === 'ar'; return <main id="main" className="not-found"><span>404</span><h1>{ar ? 'الصفحة غير موجودة' : 'Page not found'}</h1><a className="button primary" href="/" onClick={e => { e.preventDefault(); go('/'); }}>{ar ? 'العودة للرئيسية' : 'Back home'}</a></main>; }
+export { HeroRoad, How, CustomerExperience, MerchantExperience };
 export default App;
