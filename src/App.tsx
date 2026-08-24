@@ -4,7 +4,7 @@ import {
   Clock3, Coffee, Mail, MapPin, Menu, PackageCheck, Search, ShoppingBag,
   Sparkles, Store, Utensils, X, Zap
 } from 'lucide-react';
-import morMark from './assets/brand/mor-mark.jpg';
+import morMark from './assets/brand/mor-mark-transparent.png';
 
 type Language = 'ar' | 'en';
 type Navigate = (href: string) => void;
