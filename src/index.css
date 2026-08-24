@@ -61,6 +61,7 @@ body{background:var(--mor-navy)}
 .floating-language button span{font-size:19px;line-height:1}
 .floating-language button b{font-size:12px;white-space:nowrap}
 .floating-language button.active{background:#fff;color:var(--ink);box-shadow:0 4px 14px rgba(0,0,0,.16)}
+.mobile-language{display:none}
 .contact-cta{max-width:calc(var(--max) - 56px);margin:25px auto 70px;padding:42px 46px;border-radius:22px;background:#fff;border:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:40px}
 .contact-cta h2{font-size:clamp(32px,4vw,50px);line-height:1.2;margin:10px 0}
 .contact-cta p{color:var(--muted);font-size:17px;margin:0}
@@ -143,6 +144,7 @@ html[lang="ar"] body,html[lang="ar"] h1,html[lang="ar"] h2,html[lang="ar"] h3,ht
 .journey-car{position:absolute;left:42%;top:43%;width:54px;height:54px;border-radius:50%;display:grid;place-items:center;background:#061633;color:#fff;box-shadow:0 0 0 10px rgba(22,88,240,.13),0 18px 35px rgba(6,22,51,.22);animation:carFloat 3.5s ease-in-out infinite}.journey-car svg{width:24px}
 @keyframes carFloat{50%{transform:translateY(-7px)}}
 .journey-step{position:absolute;display:grid;gap:6px;max-width:150px}.journey-step span{font:700 9px Manrope;color:#6e86b3}.journey-step b{font-size:16px;line-height:1.5}.journey-step:before{content:"";width:14px;height:14px;border-radius:50%;background:#fff;border:4px solid var(--blue);box-shadow:0 0 0 8px rgba(22,88,240,.1)}.step-1{left:1%;bottom:6%}.step-2{left:24%;top:7%}.step-3{left:48%;bottom:2%}.step-4{left:70%;top:10%}.step-5{right:0;top:20%}.arrival-ring{position:absolute;width:46px;height:46px;border:1px solid rgba(25,203,239,.45);border-radius:50%;left:-16px;top:-16px;animation:pulse 2.4s ease-out infinite}
+.journey-mobile{display:none}
 
 .product-world{min-height:900px;padding:120px max(28px,calc((100vw - 1240px)/2 + 28px));display:grid;grid-template-columns:.82fr 1.1fr;gap:100px;align-items:center;background:#fff;position:relative}
 .product-notes{display:grid;margin-top:45px}.product-notes span{padding:18px 0;border-bottom:1px solid #e4e9f1;font-size:15px;font-weight:700;display:flex;align-items:center;gap:18px}.product-notes i{font:700 9px Manrope;color:var(--blue);font-style:normal}
@@ -162,15 +164,18 @@ html[lang="ar"] body,html[lang="ar"] h1,html[lang="ar"] h2,html[lang="ar"] h3,ht
 
 @media(max-width:1024px){.world-hero-inner{grid-template-columns:1fr;gap:10px}.world-copy{padding-top:35px}.neighborhood-stage{height:580px;margin:0}.neighborhood-stage>img{width:min(900px,100%)}.journey-track{transform:scale(.92)}.product-world,.merchant-inner{grid-template-columns:1fr;gap:70px}.product-copy,.merchant-copy{max-width:760px}.phone-scene{max-width:720px;width:100%;margin:auto}.merchant-console{max-width:720px;width:100%;margin:auto}.merchant-world{min-height:auto}}
 @media(max-width:620px){
+  .floating-language{display:none}
   .world-hero{padding:calc(108px + env(safe-area-inset-top,0px)) 20px 42px;min-height:auto}
-  .world-hero-inner{min-height:auto;min-width:0;width:100%}.world-copy{padding-top:26px;min-width:0;width:100%}.world-copy h1{font-size:51px;line-height:1.12;margin-top:22px;max-width:100%;overflow-wrap:anywhere}.world-copy>p{font-size:18px}.world-copy .actions{width:100%;min-width:0;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.world-copy .actions .button{min-width:0;padding-inline:10px}.world-proof{gap:10px;margin-top:27px}.world-proof i{width:20px}.world-proof span{font-size:11px;gap:5px}
+  .world-hero-inner{min-height:auto;min-width:0;width:100%}.world-copy{padding-top:26px;min-width:0;width:100%}.world-copy h1{font-size:clamp(40px,11.5vw,46px);line-height:1.18;margin-top:22px;max-width:100%;overflow-wrap:normal}.world-copy>p{font-size:17px}.world-copy .actions{width:100%;min-width:0;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.world-copy .actions .button{min-width:0;padding-inline:10px}.world-proof{gap:10px;margin-top:27px}.world-proof i{width:20px}.world-proof span{font-size:11px;gap:5px}
   .neighborhood-stage{height:390px;margin:12px -62px -12px}.neighborhood-stage>img{width:620px;max-width:none}.scene-chip{top:13%;inset-inline-start:20%;font-size:10px}.scene-status{bottom:7%;inset-inline-end:15%;width:158px;padding:13px}.hero-scroll-cue{display:none}
-  .journey-world{padding:78px 20px}.journey-intro h2,.product-copy h2,.merchant-copy h2{font-size:38px;line-height:1.24}.journey-intro p,.product-copy p,.merchant-copy p{font-size:17px}
-  .journey-track{height:auto;margin-top:50px;transform:none;padding-inline-start:30px;display:grid;gap:0}.journey-track svg{left:0;width:38px;height:100%}.journey-shadow{stroke-width:14}.journey-line{stroke-width:3}.journey-car{display:none}.journey-step,.step-1,.step-2,.step-3,.step-4,.step-5{position:relative;left:auto;right:auto;top:auto;bottom:auto;min-height:92px;max-width:none;padding-inline-start:30px;align-content:center}.journey-step:before{position:absolute;inset-inline-start:-3px;top:35px;width:10px;height:10px;border-width:3px}.journey-step span{font-size:9px}.journey-step b{font-size:17px}.arrival-ring{left:-16px;top:23px}
-  .product-world{min-height:auto;padding:80px 20px;gap:45px}.product-notes{margin-top:28px}.phone-scene{height:620px;transform:scale(.92);margin-block:-20px}.phone-shell{transform:none}.floating-arrival{right:-14px;top:95px;width:190px}.floating-vehicle{left:-12px;bottom:85px}
+  .journey-world{padding:78px 20px}.journey-intro h2,.product-copy h2,.merchant-copy h2{font-size:clamp(30px,8.6vw,34px);line-height:1.3}.journey-intro p,.product-copy p,.merchant-copy p{font-size:17px}
+  .journey-desktop{display:none}.journey-mobile{display:block;position:relative;width:100%;max-width:430px;min-height:700px;margin:46px auto 0;isolation:isolate}.mobile-road{position:absolute;z-index:0;inset:0;width:100%;height:700px;overflow:visible}.mobile-road-shadow,.mobile-road-line{fill:none;stroke-linecap:round}.mobile-road-shadow{stroke:#dce6f4;stroke-width:28}.mobile-road-line{stroke:var(--blue);stroke-width:4;stroke-dasharray:11 15;filter:drop-shadow(0 0 6px rgba(22,88,240,.28));animation:roadDash 14s linear infinite}.mobile-steps{position:relative;z-index:2;display:grid;grid-template-rows:repeat(5,140px);min-height:700px}.mobile-step{position:relative;min-width:0;padding:0 12px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}.mobile-step span,.mobile-step b{position:relative;z-index:2;background:#f4f7fc}.mobile-step span{font:700 10px Manrope;color:#6682b8;padding:2px 8px}.mobile-step b{max-width:240px;padding:3px 14px;font-size:18px;line-height:1.55;color:var(--ink)}.mobile-step i{position:absolute;z-index:1;left:50%;bottom:12px;width:18px;height:18px;border-radius:50%;background:#fff;border:4px solid var(--blue);box-shadow:0 0 0 8px rgba(22,88,240,.09);transform:translateX(-50%)}.mobile-step:nth-child(4) i:after{content:"";position:absolute;inset:-13px;border:1px solid rgba(25,203,239,.5);border-radius:50%;animation:pulse 2.4s ease-out infinite}.mobile-journey-car{position:absolute;z-index:3;left:50%;top:12%;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:var(--navy);color:#fff;box-shadow:0 0 0 8px rgba(22,88,240,.12),0 14px 28px rgba(6,22,51,.22);animation:mobileCarJourney 7s ease-in-out infinite}.mobile-journey-car svg{width:20px;height:20px}
+  .product-world{min-height:auto;padding:80px 20px;gap:45px}.product-notes{margin-top:28px}.phone-scene{width:min(100%,420px);height:590px;transform:none;margin:0 auto;overflow:visible}.phone-halo{width:min(120vw,470px);height:min(120vw,470px)}.phone-shell{width:min(82vw,315px);height:590px;transform:none}.floating-arrival{right:4px;top:82px;width:min(48vw,180px);padding:17px}.floating-vehicle{left:4px;bottom:36px}
   .merchant-world{padding:82px 20px}.merchant-inner{gap:55px}.merchant-console{min-height:520px;border-radius:20px;transform:none}.console-body{padding:16px}.console-order{padding:17px;grid-template-columns:1fr auto}.console-order .order-no{display:none}.console-flow{margin-inline:4px}.console-pulse{right:-20px;width:58px;height:58px}
   .types-section{padding-top:72px}.faq-section{padding-top:72px}
 }
+
+@keyframes mobileCarJourney{0%,100%{transform:translate3d(-50%,0,0)}25%{transform:translate3d(calc(-50% - 40px),145px,0)}50%{transform:translate3d(calc(-50% + 34px),290px,0)}75%{transform:translate3d(calc(-50% - 28px),440px,0)}}
 
 /* iPhone stability: decorative depth must never move the document viewport. */
 html,body,#root,.site-shell,.world-page{max-width:100%;overflow-x:hidden;overscroll-behavior-x:none}
@@ -186,9 +191,12 @@ body{touch-action:pan-y}
   .neighborhood-stage{inline-size:calc(100% + 40px)!important;max-inline-size:calc(100% + 40px)!important;margin:12px -20px -12px!important;overflow:hidden;transform:none!important}
   .neighborhood-stage>img{inline-size:155%!important;max-inline-size:none!important;transform:none!important;animation:none!important}
   .scene-status{right:18px!important;left:auto!important}.scene-chip{right:34px!important;left:auto!important}
-  .phone-scene{inline-size:100%;max-inline-size:100%;overflow:hidden;transform:none!important;margin-inline:0}
+  .phone-scene{inline-size:100%;max-inline-size:420px;overflow:visible;transform:none!important;margin-inline:auto}
   .phone-shell{inline-size:min(315px,calc(100vw - 42px));max-inline-size:calc(100vw - 42px)}
   .floating-arrival{right:0}.floating-vehicle{left:0}
   .journey-track,.merchant-console{max-inline-size:100%;overflow:hidden}
   .journey-car,.console-pulse{animation:none!important}
 }
+
+#journey,#customers,#business,#faq{scroll-margin-top:calc(88px + env(safe-area-inset-top,0px))}
+@media(max-width:920px){.floating-language{display:none}.mobile-language{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:12px 0;margin-top:7px;border-top:1px solid rgba(255,255,255,.1)}.mobile-language button{min-height:44px;border:1px solid rgba(255,255,255,.14);border-radius:10px;background:rgba(255,255,255,.05);color:#c8d2e9;display:flex;align-items:center;justify-content:center;gap:7px;font-size:12px;font-weight:700;cursor:pointer}.mobile-language button.active{background:#fff;color:var(--ink)}#journey,#customers,#business,#faq{scroll-margin-top:calc(78px + env(safe-area-inset-top,0px))}}
