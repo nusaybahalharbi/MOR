@@ -23,5 +23,8 @@ export function text(row: Row, ...keys: string[]) {
 
 export function date(value: unknown) {
   if (typeof value !== 'string') return '—';
-  return new Intl.DateTimeFormat('ar-SA', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value));
+  return new Intl.DateTimeFormat('ar-SA-u-ca-gregory-nu-arab', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(new Date(value));
 }
