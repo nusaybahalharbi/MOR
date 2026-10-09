@@ -188,7 +188,7 @@ function Support() {
   const [rows, setRows] = useState<Row[]>([]); const [initialLoading, setInitialLoading] = useState(true); const [refreshing, setRefreshing] = useState(false); const [error, setError] = useState(''); const [selectedId, setSelectedId] = useState<string | null>(null);
   const requestId = useRef(0); const refreshTimer = useRef<number | undefined>(undefined);
   const reload = useCallback(async (initial = false) => {
-    if (!supabase) return; const id = ++requestId.current; initial ? setInitialLoading(true) : setRefreshing(true); setError('');
+    if (!supabase) return; const id = ++requestId.current; if (initial) setInitialLoading(true); else setRefreshing(true); setError('');
     const { data, error: queryError } = await supabase.rpc('admin_support_inbox');
     if (id !== requestId.current) return;
     if (queryError) setError('تعذر تحديث صندوق الدعم. بقيت البيانات الحالية ظاهرة ويمكنك المحاولة مجددًا.'); else setRows((data ?? []) as Row[]);
