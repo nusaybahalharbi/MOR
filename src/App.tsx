@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import {
   ArrowLeft, ArrowRight, BadgeCheck, Bell, Car, Check, ChevronDown,
-  Coffee, Mail, MapPin, Menu, PackageCheck, Search, ShoppingBag,
+  Coffee, MapPin, Menu, PackageCheck, Search, ShoppingBag,
   Store, Utensils, X, Zap
 } from 'lucide-react';
 import morMark from './assets/brand/mor-mark-transparent.png';
@@ -72,8 +72,8 @@ function App() {
         en: ['Terms & Conditions | MOR', 'Terms and conditions governing use of the MOR website and services.'],
       },
       '/contact': {
-        ar: ['تواصل معنا | مر', 'تواصل مع فريق مر للاستفسارات والدعم.'],
-        en: ['Contact MOR', 'Contact the MOR team for questions and support.'],
+        ar: ['انضم إلى مر | مر للأعمال', 'أرسل بيانات متجرك للانضمام إلى مر للأعمال.'],
+        en: ['Join MOR | MOR Business', 'Share your business details to join MOR Business.'],
       },
       '/merchants': {
         ar: ['سجّل متجرك | مر للأعمال', 'سجّل اهتمام متجرك بخدمة الاستلام من السيارة مع مر.'],
@@ -106,13 +106,13 @@ function App() {
 
   const go: Navigate = href => {
     const [nextPath, hash] = href.split('#');
-    if (nextPath && nextPath !== location.pathname) { history.pushState({}, '', href); setPath(nextPath); scrollTo({ top: 0, behavior: 'smooth' }); }
+    if (nextPath && nextPath !== location.pathname) { history.pushState({}, '', href); setPath(nextPath); if (hash) window.setTimeout(() => document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth' }), 50); else scrollTo({ top: 0, behavior: 'smooth' }); }
     else if (hash) requestAnimationFrame(() => document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth' }));
     setMenuOpen(false);
   };
 
   return <Shell language={language} setLanguage={setLanguage} menuOpen={menuOpen} setMenuOpen={setMenuOpen} scrolled={scrolled} go={go}>
-    {path === '/' ? <Home language={language} go={go} /> : path === '/merchants' ? <MerchantPage language={language} /> : path === '/contact' ? <ContactPage language={language} /> : path === '/privacy' || path === '/terms' ? <LegalPage language={language} kind={path.slice(1) as 'privacy' | 'terms'} /> : <NotFound language={language} go={go} />}
+    {path === '/' ? <Home language={language} go={go} /> : path === '/merchants' || path === '/contact' ? <MerchantPage language={language} /> : path === '/privacy' || path === '/terms' ? <LegalPage language={language} kind={path.slice(1) as 'privacy' | 'terms'} /> : <NotFound language={language} go={go} />}
   </Shell>;
 }
 
@@ -128,7 +128,7 @@ function Shell({ children, language, setLanguage, menuOpen, setMenuOpen, scrolle
       <a className="brand-link" href="/" onClick={e => { e.preventDefault(); go('/'); }} aria-label={ar ? 'مر، الرئيسية' : 'MOR, home'}><Brand compact /></a>
       <nav className={`main-nav ${menuOpen ? 'open' : ''}`} aria-label={ar ? 'التنقل الرئيسي' : 'Main navigation'}>{links.map(([href, label]) => <a key={href} href={href} onClick={e => { e.preventDefault(); go(href); }}>{label}</a>)}<div className="mobile-language" role="group" aria-label={ar ? 'اختيار اللغة' : 'Choose language'}><button className={ar ? 'active' : ''} onClick={() => setLanguage('ar')} aria-pressed={ar}><span aria-hidden="true">🇸🇦</span>عربي</button><button className={!ar ? 'active' : ''} onClick={() => setLanguage('en')} aria-pressed={!ar}><span aria-hidden="true">🇺🇸</span>English</button></div><a className="button primary mobile-only" href="/merchants" onClick={e => { e.preventDefault(); go('/merchants'); }}>{c.merchant}</a></nav>
       <div className="header-actions"><a className="button primary desktop-cta" href="/merchants" onClick={e => { e.preventDefault(); go('/merchants'); }}>{c.merchant}</a><button className="menu-button" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-label={menuOpen ? (ar ? 'إغلاق القائمة' : 'Close menu') : (ar ? 'فتح القائمة' : 'Open menu')}>{menuOpen ? <X /> : <Menu />}</button></div>
-    </div></header>{children}<footer className="legal-footer"><span>© {new Date().getFullYear()} MOR · مر</span><nav aria-label={ar ? 'روابط قانونية' : 'Legal links'}><a href="/privacy" onClick={e => { e.preventDefault(); go('/privacy'); }}>{ar ? 'سياسة الخصوصية' : 'Privacy Policy'}</a><a href="/terms" onClick={e => { e.preventDefault(); go('/terms'); }}>{ar ? 'الشروط والأحكام' : 'Terms & Conditions'}</a><a href="/contact#contact-name" onClick={e => { e.preventDefault(); go('/contact#contact-name'); }}>{ar ? 'تواصل معنا' : 'Contact'}</a></nav></footer><div className="floating-language" role="group" aria-label={ar ? 'اختيار اللغة' : 'Choose language'}><button className={ar ? 'active' : ''} onClick={() => setLanguage('ar')} aria-pressed={ar}><span aria-hidden="true">🇸🇦</span><b>عربي</b></button><button className={!ar ? 'active' : ''} onClick={() => setLanguage('en')} aria-pressed={!ar}><span aria-hidden="true">🇺🇸</span><b>English</b></button></div></div>;
+    </div></header>{children}<footer className="legal-footer"><span>© {new Date().getFullYear()} MOR · مر</span><nav aria-label={ar ? 'روابط قانونية' : 'Legal links'}><a href="/privacy" onClick={e => { e.preventDefault(); go('/privacy'); }}>{ar ? 'سياسة الخصوصية' : 'Privacy Policy'}</a><a href="/terms" onClick={e => { e.preventDefault(); go('/terms'); }}>{ar ? 'الشروط والأحكام' : 'Terms & Conditions'}</a><a href="/merchants#merchant-name" onClick={e => { e.preventDefault(); go('/merchants#merchant-name'); }}>{ar ? 'انضم إلى مر للأعمال' : 'Join MOR Business'}</a></nav></footer><div className="floating-language" role="group" aria-label={ar ? 'اختيار اللغة' : 'Choose language'}><button className={ar ? 'active' : ''} onClick={() => setLanguage('ar')} aria-pressed={ar}><span aria-hidden="true">🇸🇦</span><b>عربي</b></button><button className={!ar ? 'active' : ''} onClick={() => setLanguage('en')} aria-pressed={!ar}><span aria-hidden="true">🇺🇸</span><b>English</b></button></div></div>;
 }
 
 function Home({ language, go }: { language: Language; go: Navigate }) {
@@ -147,7 +147,7 @@ function Home({ language, go }: { language: Language; go: Navigate }) {
     <MerchantWorld language={language} go={go}/>
     <StoreTypes language={language}/>
     <FAQ language={language}/>
-    <section className="contact-cta reveal"><div><span className="section-label">{ar ? 'فريق مر' : 'MOR TEAM'}</span><h2>{c.finalTitle}</h2><p>{c.finalBody}</p></div><a className="button primary" href="/contact#contact-name" onClick={e => { e.preventDefault(); go('/contact#contact-name'); }}>{ar ? 'تواصل معنا' : 'Contact us'}{ar ? <ArrowLeft/> : <ArrowRight/>}</a></section>
+    <section className="contact-cta reveal"><div><span className="section-label">{ar ? 'مر للأعمال' : 'MOR BUSINESS'}</span><h2>{ar ? 'جاهز تقرّب متجرك لعملائك؟' : 'Ready to bring your store closer?'}</h2><p>{ar ? 'شاركنا بيانات متجرك، وفريق مر للأعمال بيتواصل معك.' : 'Share your store details and the MOR Business team will contact you.'}</p></div><a className="button primary" href="/merchants#merchant-name" onClick={e => { e.preventDefault(); go('/merchants#merchant-name'); }}>{ar ? 'سجّل اهتمامك' : 'Register interest'}{ar ? <ArrowLeft/> : <ArrowRight/>}</a></section>
   </main>;
 }
 
@@ -188,10 +188,9 @@ function MerchantExperience({ language, go }: { language: Language; go: Navigate
 function FAQ({ language }: { language: Language }) { const [open, setOpen] = useState(0), ar = language === 'ar'; return <section className="section faq-section" id="faq"><Heading eyebrow="FAQ" title={copy[language].faqTitle} body={ar ? 'إجابات مباشرة عن تجربة مر.' : 'Straight answers about the MOR experience.'} /><div className="faq-list reveal">{faqs.map(([qa, qe, aa, ae], i) => <article className={`faq-item ${open === i ? 'open' : ''}`} key={qa}><button onClick={() => setOpen(open === i ? -1 : i)} aria-expanded={open === i}><span>{ar ? qa : qe}</span><ChevronDown/></button><div><p>{ar ? aa : ae}</p></div></article>)}</div></section>; }
 function Heading({ eyebrow, title, body }: { eyebrow: string; title: string; body: string }) { return <div className="section-heading reveal"><span className="section-label">{eyebrow}</span><h2>{title}</h2><p>{body}</p></div>; }
 
-function MerchantPage({ language }: { language: Language }) { const ar = language === 'ar'; return <main id="main" className="inner-page"><section className="inner-hero"><span className="eyebrow light"><Store/>{ar ? 'مر للأعمال' : 'MOR for business'}</span><h1>{ar ? 'خل متجرك أقرب لعملائك' : 'Bring your store closer to customers'}</h1><p>{ar ? 'شاركنا بيانات متجرك، وفريق مر بيتواصل معك لمناقشة تجربة الاستلام.' : 'Share your store details and the MOR team will contact you about curbside pickup.'}</p></section><section className="section form-layout"><div><Heading eyebrow={ar ? 'ابدأ من هنا' : 'Start here'} title={ar ? 'عرّفنا على متجرك' : 'Tell us about your store'} body={ar ? 'التسجيل يعبر عن الاهتمام ولا ينشئ حسابًا تلقائيًا.' : 'Registration expresses interest and does not automatically create an account.'}/><div className="form-points"><span><Check/>{ar ? 'لا توجد رسوم أو التزامات في هذه الخطوة' : 'No fees or commitment at this stage'}</span><span><Check/>{ar ? 'يراجع الفريق الطلب ويتواصل معك' : 'Our team reviews and follows up'}</span></div></div><EmailForm language={language} type="merchant"/></section></main>; }
-function ContactPage({ language }: { language: Language }) { const ar = language === 'ar'; return <main id="main" className="inner-page contact-page"><section className="inner-hero compact"><span className="eyebrow light"><Mail/>{ar ? 'تواصل معنا' : 'Contact MOR'}</span><h1>{ar ? 'نسمع منك.' : 'We’re listening.'}</h1><p>{ar ? 'اكتب رسالتك، ونرجع لك على بيانات التواصل التي تضيفها.' : 'Send us your message and we’ll reply using the contact details you provide.'}</p></section><section className="section contact-form-wrap"><EmailForm language={language} type="contact"/></section></main>; }
+function MerchantPage({ language }: { language: Language }) { const ar = language === 'ar'; return <main id="main" className="inner-page"><section className="inner-hero"><span className="eyebrow light"><Store/>{ar ? 'مر للأعمال' : 'MOR for business'}</span><h1>{ar ? 'خل متجرك أقرب لعملائك' : 'Bring your store closer to customers'}</h1><p>{ar ? 'هذه الصفحة مخصصة للمقاهي والمطاعم الراغبة بالانضمام إلى مر. شاركنا بيانات متجرك وسيتواصل معك فريق مر للأعمال.' : 'This page is for cafés and restaurants interested in joining MOR. Share your business details and the MOR Business team will contact you.'}</p></section><section className="section form-layout"><div><Heading eyebrow={ar ? 'طلب انضمام تاجر' : 'Merchant enquiry'} title={ar ? 'عرّفنا على متجرك' : 'Tell us about your store'} body={ar ? 'هذا طلب اهتمام للانضمام إلى مر للأعمال، وليس قناة دعم. الدعم متاح داخل تطبيق مر.' : 'This is a merchant interest form, not a support channel. Support is available inside the MOR app.'}/><div className="form-points"><span><Check/>{ar ? 'لا توجد رسوم أو التزامات في هذه الخطوة' : 'No fees or commitment at this stage'}</span><span><Check/>{ar ? 'يراجع فريق مر للأعمال الطلب ويتواصل معك' : 'The MOR Business team reviews and follows up'}</span></div></div><EmailForm language={language}/></section></main>; }
 
-function EmailForm({ language, type }: { language: Language; type: 'merchant' | 'contact' }) {
+function EmailForm({ language }: { language: Language }) {
   const ar = language === 'ar';
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const formRef = useRef<HTMLFormElement>(null);
@@ -202,7 +201,7 @@ function EmailForm({ language, type }: { language: Language; type: 'merchant' | 
     const form = event.currentTarget;
     const data = Object.fromEntries(new FormData(form).entries());
     try {
-      const response = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...data, type }) });
+      const response = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...data, type: 'merchant' }) });
       if (!response.ok) throw new Error(`Contact request failed: ${response.status}`);
       form.reset();
       setStatus('success');
@@ -211,9 +210,27 @@ function EmailForm({ language, type }: { language: Language; type: 'merchant' | 
       setStatus('error');
     }
   };
-  return <form ref={formRef} className="lead-form" onSubmit={submit} aria-busy={status === 'sending'}><input className="form-honeypot" name="website" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true"/><div className="form-grid">{type === 'merchant' && <><Field name="store" label={ar ? 'اسم المتجر' : 'Store name'} /><Field name="business" label={ar ? 'نوع النشاط' : 'Business type'} /></>}<Field name="name" id={type === 'contact' ? 'contact-name' : undefined} autoFocus={type === 'contact'} label={ar ? 'الاسم' : 'Name'} /><Field name="phone" type="tel" label={ar ? 'رقم الجوال' : 'Phone number'} /><Field name="email" type="email" label={ar ? 'البريد الإلكتروني' : 'Email'} />{type === 'merchant' && <Field name="city" label={ar ? 'المدينة' : 'City'} />}</div>{type === 'contact' && <label className="field full"><span>{ar ? 'الرسالة' : 'Message'}</span><textarea name="message" rows={5} required/></label>}<button className="button primary form-submit" type="submit" disabled={status === 'sending'}>{status === 'sending' ? (ar ? 'جارٍ الإرسال…' : 'Sending…') : type === 'merchant' ? (ar ? 'إرسال الطلب' : 'Send request') : (ar ? 'إرسال الرسالة' : 'Send message')}<ArrowLeft/></button><small className="form-disclosure">{ar ? 'تُرسل البيانات بأمان مباشرة إلى فريق مر، ولن يفتح تطبيق البريد.' : 'Your details are sent securely to the MOR team without opening an email app.'}</small>{status === 'success' && <p className="form-status" role="status">{ar ? 'وصلتنا رسالتك بنجاح. شكرًا لتواصلك مع مر.' : 'Your message was sent successfully. Thanks for contacting MOR.'}</p>}{status === 'error' && <p className="form-status error" role="alert">{ar ? 'تعذر إرسال الرسالة الآن. حاول مرة أخرى بعد قليل.' : 'We could not send your message. Please try again shortly.'}</p>}</form>;
+  return <form ref={formRef} className="lead-form" onSubmit={submit} aria-busy={status === 'sending'}><input className="form-honeypot" name="website" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true"/><div className="form-grid"><Field name="store" label={ar ? 'اسم المتجر' : 'Store name'} /><Field name="business" label={ar ? 'نوع النشاط' : 'Business type'} /><Field name="name" id="merchant-name" label={ar ? 'اسم المسؤول' : 'Contact name'} /><PhoneField language={language} reset={status === 'success'}/><Field name="email" type="email" inputMode="email" label={ar ? 'البريد الإلكتروني للعمل' : 'Business email'} /><Field name="city" label={ar ? 'المدينة' : 'City'} /></div><button className="button primary form-submit" type="submit" disabled={status === 'sending'}>{status === 'sending' ? (ar ? 'جارٍ إرسال الطلب…' : 'Sending request…') : (ar ? 'إرسال طلب الانضمام' : 'Send merchant enquiry')}<ArrowLeft/></button><small className="form-disclosure">{ar ? 'تُرسل بياناتك مباشرة إلى فريق مر للأعمال. الدعم متاح داخل تطبيق مر.' : 'Your details go directly to the MOR Business team. Support is available inside the MOR app.'}</small>{status === 'success' && <p className="form-status" role="status">{ar ? 'وصل طلبك إلى فريق مر للأعمال بنجاح. سنتواصل معك قريبًا.' : 'Your enquiry reached the MOR Business team. We’ll contact you soon.'}</p>}{status === 'error' && <p className="form-status error" role="alert">{ar ? 'تعذر إرسال الطلب الآن. تحقق من رقم الجوال والبريد ثم حاول مرة أخرى.' : 'We could not send the request. Check the phone number and email, then try again.'}</p>}</form>;
 }
-function Field({ name, label, type = 'text', id, autoFocus = false }: { name: string; label: string; type?: string; id?: string; autoFocus?: boolean }) { return <label className="field"><span>{label}</span><input id={id} name={name} type={type} required autoFocus={autoFocus} autoComplete={name === 'email' ? 'email' : name === 'phone' ? 'tel' : 'name'}/></label>; }
+function Field({ name, label, type = 'text', id, inputMode }: { name: string; label: string; type?: string; id?: string; inputMode?: 'email' | 'text' }) { return <label className="field"><span>{label}</span><input id={id} name={name} type={type} required inputMode={inputMode} autoComplete={name === 'email' ? 'email' : 'name'}/></label>; }
+
+const phoneCountries = [
+  { code: 'SA', dial: '+966', ar: 'السعودية', en: 'Saudi Arabia', digits: 9, placeholder: '5X XXX XXXX' },
+  { code: 'KW', dial: '+965', ar: 'الكويت', en: 'Kuwait', digits: 8, placeholder: 'XXXX XXXX' },
+  { code: 'BH', dial: '+973', ar: 'البحرين', en: 'Bahrain', digits: 8, placeholder: 'XXXX XXXX' },
+  { code: 'QA', dial: '+974', ar: 'قطر', en: 'Qatar', digits: 8, placeholder: 'XXXX XXXX' },
+  { code: 'AE', dial: '+971', ar: 'الإمارات', en: 'UAE', digits: 9, placeholder: '5X XXX XXXX' },
+  { code: 'OM', dial: '+968', ar: 'عُمان', en: 'Oman', digits: 8, placeholder: 'XXXX XXXX' },
+] as const;
+
+function PhoneField({ language, reset }: { language: Language; reset: boolean }) {
+  const [country, setCountry] = useState<(typeof phoneCountries)[number]>(phoneCountries[0]);
+  const [value, setValue] = useState('');
+  useEffect(() => { if (reset) { setCountry(phoneCountries[0]); setValue(''); } }, [reset]);
+  const groups = country.digits === 9 ? [2, 3, 4] : [4, 4];
+  const formatted = groups.reduce<string[]>((parts, size) => { const used = parts.join('').length; const part = value.slice(used, used + size); return part ? [...parts, part] : parts; }, []).join(' ');
+  return <label className="field phone-field"><span>{language === 'ar' ? 'رقم الجوال' : 'Mobile number'}</span><div className="phone-control" dir="ltr"><select name="country" aria-label={language === 'ar' ? 'الدولة' : 'Country'} value={country.code} onChange={event => { setCountry(phoneCountries.find(item => item.code === event.target.value) ?? phoneCountries[0]); setValue(''); }}>{phoneCountries.map(item => <option key={item.code} value={item.code}>{language === 'ar' ? item.ar : item.en} ({item.dial})</option>)}</select><span className="dial-code">{country.dial}</span><input name="phone" type="tel" inputMode="numeric" autoComplete="tel-national" value={formatted} onChange={event => setValue(event.target.value.replace(/\D/g, '').slice(0, country.digits))} placeholder={country.placeholder} minLength={country.digits + (country.digits === 9 ? 2 : 1)} maxLength={country.digits + (country.digits === 9 ? 2 : 1)} required aria-label={language === 'ar' ? 'رقم الجوال بدون مفتاح الدولة' : 'Mobile number without country code'}/></div></label>;
+}
 
 type PolicySection = { id: string; title: string; body: ReactNode };
 
