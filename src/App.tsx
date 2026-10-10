@@ -11,6 +11,7 @@ type Language = 'ar' | 'en';
 type Navigate = (href: string) => void;
 
 const SUPPORT_EMAIL = 'support@morapp.tech';
+const COMPLETE_EMAIL_PATTERN = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
 
 const copy = {
   ar: {
@@ -197,9 +198,16 @@ function EmailForm({ language }: { language: Language }) {
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (status === 'sending') return;
-    setStatus('sending');
     const form = event.currentTarget;
     const data = Object.fromEntries(new FormData(form).entries());
+    const emailInput = form.elements.namedItem('email') as HTMLInputElement;
+    emailInput.setCustomValidity('');
+    if (!COMPLETE_EMAIL_PATTERN.test(String(data.email ?? '').trim())) {
+      emailInput.setCustomValidity(ar ? 'أدخل بريدًا إلكترونيًا كاملًا مثل name@example.com' : 'Enter a complete email such as name@example.com');
+      emailInput.reportValidity();
+      return;
+    }
+    setStatus('sending');
     try {
       const response = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...data, type: 'merchant' }) });
       if (!response.ok) throw new Error(`Contact request failed: ${response.status}`);
@@ -212,7 +220,7 @@ function EmailForm({ language }: { language: Language }) {
   };
   return <form ref={formRef} className="lead-form" onSubmit={submit} aria-busy={status === 'sending'}><input className="form-honeypot" name="website" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true"/><div className="form-grid"><Field name="store" label={ar ? 'اسم المتجر' : 'Store name'} /><SelectField name="business" label={ar ? 'نوع النشاط' : 'Business type'} placeholder={ar ? 'اختر نوع النشاط' : 'Select business type'} options={[['cafe', ar ? 'مقهى' : 'Café'], ['restaurant', ar ? 'مطعم' : 'Restaurant']]}/><Field name="name" id="merchant-name" label={ar ? 'اسم المسؤول' : 'Contact name'} /><PhoneField language={language} reset={status === 'success'}/><Field name="email" type="email" inputMode="email" autoComplete="email" pattern="[^\s@]+@[^\s@]+\.[A-Za-z]{2,}" title={ar ? 'أدخل بريدًا إلكترونيًا صحيحًا مثل name@example.com' : 'Enter a valid email such as name@example.com'} label={ar ? 'البريد الإلكتروني للعمل' : 'Business email'} /><Field name="city" label={ar ? 'المدينة' : 'City'} /></div><button className="button primary form-submit" type="submit" disabled={status === 'sending'}>{status === 'sending' ? (ar ? 'جارٍ إرسال الطلب…' : 'Sending request…') : (ar ? 'إرسال طلب الانضمام' : 'Send merchant enquiry')}<ArrowLeft/></button><small className="form-disclosure">{ar ? 'تُرسل بياناتك مباشرة إلى فريق مر للأعمال. الدعم متاح داخل تطبيق مر.' : 'Your details go directly to the MOR Business team. Support is available inside the MOR app.'}</small>{status === 'success' && <p className="form-status" role="status">{ar ? 'وصل طلبك إلى فريق مر للأعمال بنجاح. سنتواصل معك قريبًا.' : 'Your enquiry reached the MOR Business team. We’ll contact you soon.'}</p>}{status === 'error' && <p className="form-status error" role="alert">{ar ? 'تعذر إرسال الطلب الآن. تحقق من رقم الجوال والبريد ثم حاول مرة أخرى.' : 'We could not send the request. Check the phone number and email, then try again.'}</p>}</form>;
 }
-function Field({ name, label, type = 'text', id, inputMode, pattern, title, autoComplete }: { name: string; label: string; type?: string; id?: string; inputMode?: 'email' | 'text'; pattern?: string; title?: string; autoComplete?: string }) { return <label className="field"><span>{label}</span><input id={id} name={name} type={type} required inputMode={inputMode} pattern={pattern} title={title} autoComplete={autoComplete ?? (name === 'email' ? 'email' : 'name')}/></label>; }
+function Field({ name, label, type = 'text', id, inputMode, pattern, title, autoComplete }: { name: string; label: string; type?: string; id?: string; inputMode?: 'email' | 'text'; pattern?: string; title?: string; autoComplete?: string }) { return <label className="field"><span>{label}</span><input id={id} name={name} type={type} required inputMode={inputMode} pattern={name === 'email' ? String.raw`[^\s@]+@[^\s@]+\.[A-Za-z]{2,}` : pattern} title={title} autoComplete={autoComplete ?? (name === 'email' ? 'email' : 'name')} onInput={event => { if (name === 'email') event.currentTarget.setCustomValidity(''); }}/></label>; }
 function SelectField({ name, label, placeholder, options }: { name: string; label: string; placeholder: string; options: [string, string][] }) { return <label className="field"><span>{label}</span><select name={name} required defaultValue=""><option value="" disabled>{placeholder}</option>{options.map(([value, text]) => <option key={value} value={value}>{text}</option>)}</select></label>; }
 
 const phoneCountries = [
