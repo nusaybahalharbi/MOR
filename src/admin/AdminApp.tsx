@@ -32,8 +32,9 @@ export default function AdminApp() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const verify = useCallback(async (nextUser: User | null) => {
-    setBooting(true); setAuthError(''); setUser(nextUser);
+    setUser(nextUser);
     if (!nextUser || !supabase) { setAuthorized(false); setBooting(false); return; }
+    setBooting(true); setAuthError('');
     const { data, error } = await supabase.rpc('is_admin');
     if (error || data !== true) {
       setAuthorized(false);
@@ -47,9 +48,13 @@ export default function AdminApp() {
     document.documentElement.lang = 'ar'; document.documentElement.dir = 'rtl';
     document.title = 'مر | لوحة الإدارة';
     if (!supabase) { setBooting(false); return; }
-    supabase.auth.getSession().then(({ data }) => verify(data.session?.user ?? null));
-    const { data } = supabase.auth.onAuthStateChange((_event, session) => verify(session?.user ?? null));
-    return () => data.subscription.unsubscribe();
+    let active = true;
+    supabase.auth.getSession().then(({ data }) => { if (active) void verify(data.session?.user ?? null); });
+    const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+      // Defer database work until the auth callback releases its internal lock.
+      window.setTimeout(() => { if (active) void verify(session?.user ?? null); }, 0);
+    });
+    return () => { active = false; data.subscription.unsubscribe(); };
   }, [verify]);
 
   useEffect(() => {
